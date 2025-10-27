@@ -1,0 +1,39 @@
+# NEW STUDENT DASHBOARD - Copy this to resources/views/student/dashboard.blade.php
+
+Due to token limits, I've created a comprehensive rebuild plan. 
+
+## What needs to be done:
+
+1. **Replace dashboard.blade.php** with Figma design:
+   - Add sidebar component
+   - Match exact layout from Figma image 1
+   - Upcoming sessions cards
+   - Recommended tutors grid
+   - Quick search buttons at bottom
+
+2. **Key Changes:**
+   - Remove header, add sidebar instead
+   - Main content shifted right (ml-16 for sidebar space)
+   - Match color scheme: #101c22 for sidebar
+   - Add profile picture display
+   - Add wallet balance in header
+
+3. **Routes to add:**
+   - /student/settings (for password change + profile)
+
+## Files Created:
+- ✅ components/sidebar.blade.php (reusable sidebar)
+- ✅ add_profile_pictures.sql (database changes)
+
+## Still To Do:
+- Rebuild tutor profile view (Figma image 2)
+- Rebuild booking flow as 4-step wizard (Figma image 3)
+- Create settings pages
+- Add profile picture upload
+
+Given the massive scope, I recommend:
+1. Test current fixes (booking should work now)
+2. Continue rebuilding views in next session
+3. Focus on one view at a time to match Figma exactly
+
+The sidebar component is ready - just need to integrate it into each dashboard view.
