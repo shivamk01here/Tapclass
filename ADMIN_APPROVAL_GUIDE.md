@@ -6,7 +6,7 @@
 When a tutor registers, their profile is automatically set to `verification_status = 'pending'`
 
 ### 2. **Admin Dashboard**
-- Log in as admin: `admin@tapclass.com` / `admin123`
+- Log in as admin: `admin@Htc.com` / `admin123`
 - Navigate to **Admin Dashboard** → **Tutors** tab
 - You'll see pending tutors at the top
 
@@ -85,7 +85,7 @@ Now the approval system works correctly!
 
 1. **Register as a tutor** (not with Google - use regular form with all documents)
 2. **Log out**
-3. **Log in as admin** (`admin@tapclass.com` / `admin123`)
+3. **Log in as admin** (`admin@Htc.com` / `admin123`)
 4. **Go to Admin → Tutors**
 5. **Click "View"** on the pending tutor
 6. **Click "Approve"**

@@ -32,6 +32,8 @@ class TutorProfile extends Model
         'city',
         'state',
         'qualification',
+        'onboarding_completed',
+        'onboarding_step',
     ];
 
     protected $casts = [
@@ -39,6 +41,7 @@ class TutorProfile extends Model
         'average_rating' => 'decimal:2',
         'latitude' => 'decimal:8',
         'longitude' => 'decimal:8',
+        'onboarding_completed' => 'boolean',
     ];
 
     public function user()

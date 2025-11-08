@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>@yield('title', 'TapClass - Find Your Perfect Tutor')</title>
+    <title>@yield('title', 'Htc - Find Your Perfect Tutor')</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
@@ -41,7 +41,7 @@
                     <svg class="w-8 h-8" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
                         <path d="M4 4H17.3334V17.3334H30.6666V30.6666H44V44H4V4Z" fill="currentColor"></path>
                     </svg>
-                    <span class="text-xl font-bold">TapClass</span>
+                    <span class="text-xl font-bold">Htc</span>
                 </a>
 
                 <div class="hidden md:flex items-center gap-6">
@@ -136,7 +136,7 @@
                                 <path d="M4 4H17.3334V17.3334H30.6666V30.6666H44V44H4V4Z" fill="currentColor"></path>
                             </svg>
                         </div>
-                        <span class="text-2xl font-bold">TapClass</span>
+                        <span class="text-2xl font-bold">Htc</span>
                     </div>
                     <p class="text-gray-400 text-sm">
                         Connecting students with qualified tutors for personalized learning experiences.
@@ -170,7 +170,7 @@
             </div>
 
             <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
-                <p>&copy; {{ date('Y') }} TapClass. All rights reserved.</p>
+                <p>&copy; {{ date('Y') }} Htc. All rights reserved.</p>
             </div>
         </div>
     </footer>

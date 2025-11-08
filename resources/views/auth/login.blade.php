@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Login - TapClass</title>
+    <title>Login - Htc</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
     <script>
@@ -35,7 +35,7 @@
                         <path d="M4 4H17.3334V17.3334H30.6666V30.6666H44V44H4V4Z" fill="#4F7EFF"></path>
                     </svg>
                 </div>
-                <h2 class="text-2xl font-bold text-gray-900">TapClass</h2>
+                <h2 class="text-2xl font-bold text-gray-900">Htc</h2>
             </div>
 
             <!-- Form Header -->

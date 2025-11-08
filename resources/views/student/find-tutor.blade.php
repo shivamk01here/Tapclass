@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title', 'Contact Us - TapClass')
+@section('title', 'Contact Us - Htc')
 
 @section('content')
 <body class="bg-gray-50 font-display">

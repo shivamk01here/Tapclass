@@ -1,4 +1,4 @@
-# AI Assistant Rules for TapClass Project
+# AI Assistant Rules for Htc Project
 
 ## Critical Rules - MUST FOLLOW
 

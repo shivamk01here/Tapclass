@@ -145,7 +145,7 @@ class AuthController extends Controller
             // Log in the user
             Auth::login($user);
 
-            return redirect()->route('student.dashboard')->with('success', 'Registration successful! Welcome to TapClass.');
+            return redirect()->route('student.dashboard')->with('success', 'Registration successful! Welcome to Htc.');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withErrors(['error' => 'Registration failed: ' . $e->getMessage()])->withInput();
@@ -165,23 +165,6 @@ class AuthController extends Controller
         $rules = [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'phone' => 'nullable|string|max:20',
-            'bio' => 'required|string|min:50|max:500',
-            'experience_years' => 'required|integer|min:0|max:50',
-            'education' => 'required|string|max:500',
-            'location' => 'nullable|string|max:255',
-            'latitude' => 'nullable|numeric',
-            'longitude' => 'nullable|numeric',
-            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'government_id' => 'required|image|max:5120',
-            'degree_certificate' => 'required|image|max:5120',
-            'cv' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
-            'subjects' => 'required|array|min:1',
-            'subjects.*.subject_id' => 'required|exists:subjects,id',
-            'subjects.*.online_rate' => 'nullable|numeric|min:0',
-            'subjects.*.offline_rate' => 'nullable|numeric|min:0',
-            'subjects.*.is_online_available' => 'boolean',
-            'subjects.*.is_offline_available' => 'boolean',
         ];
         
         if (!$isGoogleAuth) {
@@ -198,21 +181,13 @@ class AuthController extends Controller
 
         try {
             $googleData = session('google_user_data');
-            
-            // Handle profile picture upload
-            $profilePicturePath = null;
-            if ($request->hasFile('profile_picture')) {
-                $profilePicturePath = $request->file('profile_picture')->store('profile_pictures', 'public');
-            }
 
-            // Create user
+            // Create user (minimal)
             $userData = [
                 'name' => $isGoogleAuth ? $googleData['name'] : $request->name,
                 'email' => $isGoogleAuth ? $googleData['email'] : $request->email,
-                'phone' => $request->phone,
                 'role' => 'tutor',
                 'email_verified_at' => now(),
-                'profile_picture' => $profilePicturePath,
             ];
             
             if ($isGoogleAuth) {
@@ -221,52 +196,16 @@ class AuthController extends Controller
             } else {
                 $userData['password'] = Hash::make($request->password);
             }
-            
+
             $user = User::create($userData);
 
-            // Handle file uploads
-            $governmentIdPath = null;
-            $degreeCertificatePath = null;
-            $cvPath = null;
-
-            if ($request->hasFile('government_id')) {
-                $governmentIdPath = $request->file('government_id')->store('uploads/tutors/government_ids', 'public');
-            }
-
-            if ($request->hasFile('degree_certificate')) {
-                $degreeCertificatePath = $request->file('degree_certificate')->store('uploads/tutors/degrees', 'public');
-            }
-            
-            if ($request->hasFile('cv')) {
-                $cvPath = $request->file('cv')->store('uploads/tutors/cvs', 'public');
-            }
-
-            // Create tutor profile
-            $tutorProfile = TutorProfile::create([
+            // Create empty tutor profile to be filled during onboarding
+            TutorProfile::create([
                 'user_id' => $user->id,
-                'bio' => $request->bio,
-                'experience_years' => $request->experience_years,
-                'education' => $request->education,
-                'location' => $request->location,
-                'latitude' => $request->latitude,
-                'longitude' => $request->longitude,
-                'government_id_path' => $governmentIdPath,
-                'degree_certificate_path' => $degreeCertificatePath,
-                'cv_path' => $cvPath,
                 'verification_status' => 'pending',
+                'onboarding_completed' => false,
+                'onboarding_step' => 0,
             ]);
-
-            // Add subjects
-            foreach ($request->subjects as $subjectData) {
-                \App\Models\TutorSubject::create([
-                    'tutor_profile_id' => $tutorProfile->id,
-                    'subject_id' => $subjectData['subject_id'],
-                    'online_rate' => $subjectData['online_rate'] ?? null,
-                    'offline_rate' => $subjectData['offline_rate'] ?? null,
-                    'is_online_available' => $subjectData['is_online_available'] ?? false,
-                    'is_offline_available' => $subjectData['is_offline_available'] ?? false,
-                ]);
-            }
 
             DB::commit();
             
@@ -276,7 +215,8 @@ class AuthController extends Controller
             // Log in the user
             Auth::login($user);
 
-            return redirect()->route('tutor.onboarding')->with('success', 'Registration successful! Your profile is under review.');
+            // Send to dashboard; TutorOnboardMiddleware will redirect to onboarding until completed
+            return redirect()->route('tutor.dashboard')->with('success', 'Registration successful!');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withErrors(['error' => 'Registration failed: ' . $e->getMessage()])->withInput();

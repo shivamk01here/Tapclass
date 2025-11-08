@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title', 'Contact Us - TapClass')
+@section('title', 'Contact Us - Htc')
 
 @section('content')
 <div class="bg-white">
@@ -19,8 +19,8 @@
                         </div>
                         <div>
                             <h3 class="font-bold text-gray-900 mb-1">Email</h3>
-                            <p class="text-gray-600">support@tapclass.com</p>
-                            <p class="text-gray-600">info@tapclass.com</p>
+                            <p class="text-gray-600">support@Htc.com</p>
+                            <p class="text-gray-600">info@Htc.com</p>
                         </div>
                     </div>
 

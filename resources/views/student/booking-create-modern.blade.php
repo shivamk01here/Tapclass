@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Book a Session with {{ $tutor->user->name }} - TapClass</title>
+    <title>Book a Session with {{ $tutor->user->name }} - Htc</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>

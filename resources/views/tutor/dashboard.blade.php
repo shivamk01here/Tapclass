@@ -1,6 +1,6 @@
 @extends('layouts.tutor')
 
-@section('title', 'Dashboard - TapClass')
+@section('title', 'Dashboard - Htc')
 
 @section('content')
 <div class="max-w-7xl mx-auto px-8 py-8">

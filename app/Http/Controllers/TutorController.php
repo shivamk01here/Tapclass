@@ -7,6 +7,7 @@ use App\Models\Review;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Booking;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TutorController extends Controller
 {
@@ -15,14 +16,170 @@ class TutorController extends Controller
         return view('tutor.dashboard');
     }
 
-    public function onboarding()
+    public function pending()
     {
-        return view('tutor.onboarding');
+        $user = auth()->user();
+        $profile = $user->tutorProfile;
+        return view('tutor.pending', compact('user', 'profile'));
     }
 
-    public function submitOnboarding(Request $request)
+    public function onboarding()
     {
-        return redirect()->route('tutor.dashboard')->with('success', 'Profile submitted');
+        $user = auth()->user();
+        $profile = $user->tutorProfile;
+        return view('tutor.onboarding', compact('user', 'profile'));
+    }
+
+    /**
+     * Save onboarding step via AJAX.
+     */
+    public function saveOnboardingStep(Request $request)
+    {
+        // Always respond JSON for AJAX
+        $request->headers->set('Accept', 'application/json');
+
+        try {
+            $request->validate(['step' => 'required|string']);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['success' => false, 'errors' => $e->errors()], 422);
+        }
+
+        $user = auth()->user();
+        $profile = $user->tutorProfile;
+
+        DB::beginTransaction();
+        try {
+            switch ($request->step) {
+                case 'basic':
+                    try {
+                        $data = $request->validate([
+                            'bio' => 'required|string|min:50|max:500',
+                            'experience_years' => 'required|integer|min:0|max:50',
+                            'education' => 'required|string|max:500',
+                        ]);
+                    } catch (\Illuminate\Validation\ValidationException $e) {
+                        DB::rollBack();
+                        return response()->json(['success' => false, 'errors' => $e->errors()], 422);
+                    }
+                    $profile->update($data + ['onboarding_step' => 1]);
+                    break;
+
+                case 'subjects':
+                    try {
+                        $payload = $request->validate([
+                            'subjects' => 'required|array|min:1',
+                            'subjects.*.subject_id' => 'required|exists:subjects,id',
+                            'subjects.*.online_rate' => 'nullable|numeric|min:0',
+                            'subjects.*.offline_rate' => 'nullable|numeric|min:0',
+                            'subjects.*.is_online_available' => 'boolean',
+                            'subjects.*.is_offline_available' => 'boolean',
+                        ]);
+                    } catch (\Illuminate\Validation\ValidationException $e) {
+                        DB::rollBack();
+                        return response()->json(['success' => false, 'errors' => $e->errors()], 422);
+                    }
+                    // Upsert tutor subjects
+                    \App\Models\TutorSubject::where('tutor_profile_id', $profile->id)->delete();
+                    foreach ($payload['subjects'] as $s) {
+                        \App\Models\TutorSubject::create([
+                            'tutor_profile_id' => $profile->id,
+                            'subject_id' => $s['subject_id'],
+                            'online_rate' => $s['online_rate'] ?? null,
+                            'offline_rate' => $s['offline_rate'] ?? null,
+                            'is_online_available' => (bool)($s['is_online_available'] ?? false),
+                            'is_offline_available' => (bool)($s['is_offline_available'] ?? false),
+                        ]);
+                    }
+                    $profile->update(['onboarding_step' => 2]);
+                    break;
+
+                case 'documents':
+                    $govPath = $request->file('government_id')
+                        ? $request->file('government_id')->store('uploads/tutors/government_ids', 'public')
+                        : $profile->government_id_path;
+                    $degreePath = $request->file('degree_certificate')
+                        ? $request->file('degree_certificate')->store('uploads/tutors/degrees', 'public')
+                        : $profile->degree_certificate_path;
+                    $cvPath = $request->file('cv')
+                        ? $request->file('cv')->store('uploads/tutors/cvs', 'public')
+                        : $profile->cv_path;
+                    $profile->update([
+                        'government_id_path' => $govPath,
+                        'degree_certificate_path' => $degreePath,
+                        'cv_path' => $cvPath,
+                        'onboarding_step' => 3,
+                    ]);
+                    break;
+
+                case 'location':
+                    try {
+                        $data = $request->validate([
+                            'location' => 'nullable|string|max:255',
+                            'city' => 'nullable|string|max:100',
+                            'state' => 'nullable|string|max:100',
+                            'latitude' => 'nullable|numeric',
+                            'longitude' => 'nullable|numeric',
+                            'teaching_mode' => 'nullable|in:online,offline,both',
+                            'hourly_rate' => 'nullable|numeric|min:0',
+                        ]);
+                    } catch (\Illuminate\Validation\ValidationException $e) {
+                        DB::rollBack();
+                        return response()->json(['success' => false, 'errors' => $e->errors()], 422);
+                    }
+                    $profile->update($data + ['onboarding_step' => 4]);
+                    break;
+
+                case 'phone':
+                    try {
+                        $data = $request->validate([
+                            'phone' => 'required|string|max:20',
+                        ]);
+                    } catch (\Illuminate\Validation\ValidationException $e) {
+                        DB::rollBack();
+                        return response()->json(['success' => false, 'errors' => $e->errors()], 422);
+                    }
+                    $user->update(['phone' => $data['phone'], 'otp' => '123456', 'otp_expires_at' => now()->addMinutes(10)]);
+                    $profile->update(['onboarding_step' => 5]);
+                    break;
+
+                default:
+                    DB::rollBack();
+                    return response()->json(['success' => false, 'message' => 'Invalid step'], 422);
+            }
+
+            DB::commit();
+            return response()->json(['success' => true]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => 'Failed to save step'], 500);
+        }
+    }
+
+    /**
+     * Verify onboarding OTP (static 123456 for now) and complete onboarding.
+     */
+    public function verifyOnboardingOtp(Request $request)
+    {
+        $data = $request->validate([
+            'otp' => 'required|string',
+        ]);
+        $user = auth()->user();
+        $profile = $user->tutorProfile;
+
+        if ($data['otp'] !== '123456') {
+            return response()->json(['success' => false, 'message' => 'Invalid OTP'], 422);
+        }
+
+        $user->update([
+            'otp' => null,
+            'otp_expires_at' => null,
+        ]);
+        $profile->update([
+            'onboarding_completed' => true,
+            'onboarding_step' => 6,
+        ]);
+
+        return response()->json(['success' => true, 'redirect' => route('tutor.dashboard')]);
     }
 
     public function bookings()

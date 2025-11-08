@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title', 'Terms & Conditions - TapClass')
+@section('title', 'Terms & Conditions - Htc')
 
 @section('content')
 <div class="bg-white py-12">
@@ -11,7 +11,7 @@
         <div class="prose prose-lg max-w-none">
             <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">1. Acceptance of Terms</h2>
             <p class="text-gray-600 mb-4">
-                By accessing and using TapClass, you accept and agree to be bound by these Terms and Conditions. If you do not agree to these terms, please do not use our platform.
+                By accessing and using Htc, you accept and agree to be bound by these Terms and Conditions. If you do not agree to these terms, please do not use our platform.
             </p>
 
             <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">2. User Accounts</h2>
@@ -42,12 +42,12 @@
 
             <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">6. Intellectual Property</h2>
             <p class="text-gray-600 mb-4">
-                All content on TapClass, including text, graphics, logos, and software, is the property of TapClass and is protected by copyright and other intellectual property laws.
+                All content on Htc, including text, graphics, logos, and software, is the property of Htc and is protected by copyright and other intellectual property laws.
             </p>
 
             <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">7. Limitation of Liability</h2>
             <p class="text-gray-600 mb-4">
-                TapClass is a platform connecting students and tutors. We are not responsible for the quality of tutoring services, disputes between users, or any damages arising from use of our platform.
+                Htc is a platform connecting students and tutors. We are not responsible for the quality of tutoring services, disputes between users, or any damages arising from use of our platform.
             </p>
 
             <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">8. Termination</h2>

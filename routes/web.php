@@ -24,6 +24,10 @@ Route::view('/contact', 'pages.contact')->name('contact');
 Route::view('/privacy', 'pages.privacy')->name('privacy');
 Route::view('/terms', 'pages.terms')->name('terms');
 
+
+Route::get('/register', [HomeController::class, 'searchTutors'])->name('tutors.search');
+
+
 // Public Tutor Routes
 Route::get('/tutors', [HomeController::class, 'searchTutors'])->name('tutors.search');
 Route::get('/tutors/{id}', [HomeController::class, 'tutorProfile'])->name('tutors.profile');
@@ -88,46 +92,55 @@ Route::middleware(['auth', 'role:student'])->prefix('student')->name('student.')
 */
 
 Route::middleware(['auth', 'role:tutor'])->prefix('tutor')->name('tutor.')->group(function () {
-    Route::get('/dashboard', [TutorController::class, 'dashboard'])->name('dashboard');
+    // Onboarding routes (accessible before onboarding completion)
     Route::get('/onboarding', [TutorController::class, 'onboarding'])->name('onboarding');
-    Route::post('/onboarding/submit', [TutorController::class, 'submitOnboarding'])->name('onboarding.submit');
-    
-    // Only verified tutors can access these
-    Route::middleware('verified.tutor')->group(function () {
-        Route::get('/bookings', [TutorController::class, 'bookings'])->name('bookings');
-        Route::post('/booking/{id}/cancel', [BookingController::class, 'tutorCancel'])->name('booking.cancel');
-        Route::get('/earnings', [TutorController::class, 'earnings'])->name('earnings');
-        Route::post('/earnings/withdraw', [TutorController::class, 'requestWithdrawal'])->name('earnings.withdraw');
-        Route::get('/availability', [TutorController::class, 'availability'])->name('availability');
-        Route::post('/availability/save', [TutorController::class, 'saveAvailability'])->name('availability.save');
+    Route::post('/onboarding/save-step', [TutorController::class, 'saveOnboardingStep'])->name('onboarding.save-step');
+    Route::post('/onboarding/verify-otp', [TutorController::class, 'verifyOnboardingOtp'])->name('onboarding.verify-otp');
+
+    // Pending verification view
+    Route::get('/pending', [TutorController::class, 'pending'])->name('pending');
+
+    // All other tutor routes require onboarding completion and will redirect to pending if not verified
+    Route::middleware(['tutor.onboarded', 'tutor.verification'])->group(function () {
+        Route::get('/dashboard', [TutorController::class, 'dashboard'])->name('dashboard');
+
+        // Only verified tutors can access these
+        Route::middleware('verified.tutor')->group(function () {
+            Route::get('/bookings', [TutorController::class, 'bookings'])->name('bookings');
+            Route::post('/booking/{id}/cancel', [BookingController::class, 'tutorCancel'])->name('booking.cancel');
+            Route::get('/earnings', [TutorController::class, 'earnings'])->name('earnings');
+            Route::post('/earnings/withdraw', [TutorController::class, 'requestWithdrawal'])->name('earnings.withdraw');
+            Route::get('/availability', [TutorController::class, 'availability'])->name('availability');
+            Route::post('/availability/save', [TutorController::class, 'saveAvailability'])->name('availability.save');
+        });
+        
+        Route::get('/profile', [TutorController::class, 'profile'])->name('profile');
+        Route::post('/profile/update', [TutorController::class, 'updateProfile'])->name('profile.update');
+        Route::get('/reviews', [TutorController::class, 'reviews'])->name('reviews');
+        Route::get('/notifications', [TutorController::class, 'notifications'])->name('notifications');
+        Route::post('/settings/picture', [TutorController::class, 'updatePicture'])->name('settings.picture');
+        Route::post('/settings/password', [TutorController::class, 'updatePassword'])->name('settings.password');
+
+        Route::post('/bookings/{booking}/approve', [TutorController::class, 'approveBooking'])
+            ->name('booking.approve');
+
+        // For cancelling a pending/upcoming booking
+        Route::post('/bookings/{booking}/cancel', [TutorController::class, 'cancelBooking'])
+            ->name('booking.cancel');
+
+        // For marking an upcoming session as completed
+        Route::post('/bookings/{booking}/complete', [TutorController::class, 'completeBooking'])
+            ->name('booking.complete');
+            
+        // For approving payment on a past session
+        Route::post('/bookings/{booking}/approve-payment', [TutorController::class, 'approvePayment'])
+            ->name('booking.approve-payment');
+
+        // For the AJAX call to update the meeting link
+        Route::post('/bookings/{booking}/update-link', [TutorController::class, 'updateMeetLink'])
+            ->name('booking.updateLink'); // This name must match the AJAX route
     });
-    
-    Route::get('/profile', [TutorController::class, 'profile'])->name('profile');
-    Route::post('/profile/update', [TutorController::class, 'updateProfile'])->name('profile.update');
-    Route::get('/reviews', [TutorController::class, 'reviews'])->name('reviews');
-    Route::get('/notifications', [TutorController::class, 'notifications'])->name('notifications');
-    Route::post('/settings/picture', [TutorController::class, 'updatePicture'])->name('settings.picture');
-    Route::post('/settings/password', [TutorController::class, 'updatePassword'])->name('settings.password');
-
-    Route::post('/bookings/{booking}/approve', [TutorController::class, 'approveBooking'])
-         ->name('booking.approve');
-
-    // For cancelling a pending/upcoming booking
-    Route::post('/bookings/{booking}/cancel', [TutorController::class, 'cancelBooking'])
-         ->name('booking.cancel');
-
-    // For marking an upcoming session as completed
-    Route::post('/bookings/{booking}/complete', [TutorController::class, 'completeBooking'])
-         ->name('booking.complete');
-         
-    // For approving payment on a past session
-    Route::post('/bookings/{booking}/approve-payment', [TutorController::class, 'approvePayment'])
-         ->name('booking.approve-payment');
-
-    // For the AJAX call to update the meeting link
-    Route::post('/bookings/{booking}/update-link', [TutorController::class, 'updateMeetLink'])
-         ->name('booking.updateLink'); // This name must match the AJAX route
-  });
+});
 
 /*
 |--------------------------------------------------------------------------

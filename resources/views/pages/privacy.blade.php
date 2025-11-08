@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title', 'Privacy Policy - TapClass')
+@section('title', 'Privacy Policy - Htc')
 
 @section('content')
 <div class="bg-white py-12">

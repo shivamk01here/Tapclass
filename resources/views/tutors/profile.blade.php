@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>{{ $tutor->user->name }} - Tutor Profile - TapClass</title>
+  <title>{{ $tutor->user->name }} - Tutor Profile - Htc</title>
   <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
@@ -28,7 +28,7 @@
       <svg class="w-7 h-7 sm:w-8 sm:h-8" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
         <path d="M4 4H17.3334V17.3334H30.6666V30.6666H44V44H4V4Z" fill="currentColor"></path>
       </svg>
-      <span class="text-lg sm:text-xl font-bold">TapClass</span>
+      <span class="text-lg sm:text-xl font-bold">Htc</span>
     </a>
 
     <button id="menuToggle" class="sm:hidden p-2 rounded-md hover:bg-gray-100">

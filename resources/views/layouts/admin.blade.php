@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>@yield('title', 'Admin Dashboard') - TapClass</title>
+    <title>@yield('title', 'Admin Dashboard') - Htc</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
@@ -34,7 +34,7 @@
             <!-- Logo -->
             <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2 text-primary mb-8">
                 <span class="material-symbols-outlined text-3xl">admin_panel_settings</span>
-                <h2 class="text-xl font-bold">TapClass Admin</h2>
+                <h2 class="text-xl font-bold">Htc Admin</h2>
             </a>
             
             <!-- Navigation -->
