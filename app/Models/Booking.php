@@ -29,6 +29,11 @@ class Booking extends Model
         'location_longitude',
         'cancellation_reason',
         'cancelled_by',
+        // Parent-managed learner fields
+        'child_id',
+        'child_name',
+        'child_age',
+        'child_class_slab',
     ];
 
     protected $casts = [

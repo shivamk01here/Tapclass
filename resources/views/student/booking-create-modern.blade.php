@@ -72,7 +72,7 @@
         </div>
     </div>
 
-    <form method="POST" action="{{ route('student.booking.store') }}" id="bookingForm">
+    <form method="POST" action="{{ auth()->check() && auth()->user()->isParent() ? route('parent.booking.store') : route('student.booking.store') }}" id="bookingForm">
         @csrf
         <input type="hidden" name="tutor_id" value="{{ $tutor->user_id }}"/>
 

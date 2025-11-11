@@ -24,8 +24,7 @@ Route::view('/contact', 'pages.contact')->name('contact');
 Route::view('/privacy', 'pages.privacy')->name('privacy');
 Route::view('/terms', 'pages.terms')->name('terms');
 
-
-Route::get('/register', [HomeController::class, 'searchTutors'])->name('tutors.search');
+Route::view('/register', 'auth.register')->name('register');
 
 
 // Public Tutor Routes
@@ -43,6 +42,10 @@ Route::post('/register/student', [AuthController::class, 'registerStudent'])->mi
 
 Route::get('/register/tutor', [AuthController::class, 'showTutorRegister'])->name('register.tutor')->middleware('guest');
 Route::post('/register/tutor', [AuthController::class, 'registerTutor'])->middleware('guest');
+
+// Parent register (minimal like tutor/student)
+Route::get('/register/parent', [AuthController::class, 'showParentRegister'])->name('register.parent')->middleware('guest');
+Route::post('/register/parent', [AuthController::class, 'registerParent'])->middleware('guest');
 
 // Google OAuth
 Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('auth.google');
@@ -84,6 +87,45 @@ Route::middleware(['auth', 'role:student'])->prefix('student')->name('student.')
 });
 
     Route::post('/review/store/{booking}', [ReviewController::class, 'store'])->name('reviews.store');
+
+/*
+|--------------------------------------------------------------------------
+| Parent Routes
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth','role:parent'])->prefix('parent')->name('parent.')->group(function(){
+    // Onboarding
+    Route::get('/onboarding', [\App\Http\Controllers\ParentOnboardingController::class, 'show'])->name('onboarding')->withoutMiddleware('parent.onboarded');
+});
+
+// Separate onboarding routes (before parent.onboarded)
+Route::middleware(['auth','role:parent'])->group(function(){
+    Route::get('/onboarding/parent', [\App\Http\Controllers\ParentOnboardingController::class, 'show'])->name('onboarding.parent.show');
+    Route::post('/onboarding/parent/child', [\App\Http\Controllers\ParentOnboardingController::class, 'storeChild'])->name('onboarding.parent.child.store');
+    Route::get('/onboarding/parent/consultation', [\App\Http\Controllers\ParentOnboardingController::class, 'consultationPrompt'])->name('onboarding.parent.consultation');
+    Route::post('/onboarding/parent/consultation', [\App\Http\Controllers\ParentOnboardingController::class, 'storeConsultation'])->name('onboarding.parent.consultation.store');
+});
+
+// Parent app area (requires onboarded and active child set)
+Route::middleware(['auth','role:parent','parent.onboarded','parent.active_child'])->prefix('parent')->name('parent.')->group(function(){
+    Route::get('/', [\App\Http\Controllers\ParentDashboardController::class, 'dashboard'])->name('dashboard');
+    Route::get('/dashboard', [\App\Http\Controllers\ParentDashboardController::class, 'dashboard'])->name('dashboard.alt');
+
+    // Booking (parent-specific aliases for clarity; also available via public booking.create)
+    Route::get('/booking/create/{tutorId}', [\App\Http\Controllers\BookingController::class, 'create'])->name('booking.create');
+    Route::post('/booking', [\App\Http\Controllers\BookingController::class, 'store'])->name('booking.store');
+
+    // Learners management
+    Route::get('/learners', [\App\Http\Controllers\ParentLearnerController::class, 'index'])->name('learners');
+    Route::post('/learners', [\App\Http\Controllers\ParentLearnerController::class, 'store'])->name('learners.store');
+    Route::post('/learners/{child}', [\App\Http\Controllers\ParentLearnerController::class, 'update'])->name('learners.update');
+    Route::delete('/learners/{child}', [\App\Http\Controllers\ParentLearnerController::class, 'destroy'])->name('learners.delete');
+    Route::post('/child/switch', [\App\Http\Controllers\ParentLearnerController::class, 'switch'])->name('child.switch');
+
+    // Consultation (view/manage)
+    Route::get('/consultation', [\App\Http\Controllers\ParentOnboardingController::class, 'consultationPrompt'])->name('consultation');
+});
 
 /*
 |--------------------------------------------------------------------------

@@ -13,7 +13,7 @@
         theme: {
           extend: {
             colors: {
-              "primary": "#13a4ec",
+              "primary": "#0071b3",
               "secondary": "#FFA500",
               "background-light": "#f6f7f8",
               "background-dark": "#101c22",
@@ -24,6 +24,12 @@
         },
       }
     </script>
+    <!-- Alpine.js + plugins via CDN for collapses and intersection animations -->
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/intersect@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Flowbite for accessible accordion UI (no custom JS) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.js"></script>
     <style>
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
@@ -52,12 +58,16 @@
 
                 <div class="hidden md:flex items-center gap-4">
                     @auth
-                        <a href="{{ auth()->user()->isStudent() ? route('student.dashboard') : (auth()->user()->isTutor() ? route('tutor.dashboard') : route('admin.dashboard')) }}" class="px-5 py-2 bg-primary text-white rounded-lg font-bold hover:bg-primary/90 transition-colors">
+                        <a href="{{ auth()->user()->isStudent() ? route('student.dashboard') : (auth()->user()->isTutor() ? route('tutor.dashboard') : (auth()->user()->isParent() ? route('parent.dashboard') : route('admin.dashboard'))) }}" class="px-5 py-2 bg-primary text-white rounded-lg font-bold hover:bg-primary/90 transition-colors">
                             Dashboard
                         </a>
+                        <form method="POST" action="{{ route('logout') }}" class="inline">
+                            @csrf
+                            <button type="submit" class="px-4 py-2 text-gray-700 dark:text-gray-300 font-medium hover:text-primary transition-colors">Logout</button>
+                        </form>
                     @else
                         <a href="{{ route('login') }}" class="px-5 py-2 text-gray-700 dark:text-gray-300 font-medium hover:text-primary transition-colors">Log in</a>
-                        <a href="{{ route('register.student') }}" class="px-5 py-2 bg-primary text-white rounded-lg font-bold hover:bg-primary/90 transition-colors">Sign Up</a>
+                        <a href="{{ route('register') }}" class="px-5 py-2 bg-primary text-white rounded-lg font-bold hover:bg-primary/90 transition-colors">Sign Up</a>
                     @endauth
                     
                     <div class="w-10 h-10 rounded-full bg-secondary flex items-center justify-center">
@@ -95,6 +105,14 @@
                             </a>
                         @elseif(auth()->user()->isTutor())
                             <a href="{{ route('tutor.dashboard') }}" class="block text-gray-700 dark:text-gray-300 hover:text-primary font-medium transition">
+                                Dashboard
+                            </a>
+                        @elseif(auth()->user()->isTutor())
+                            <a href="{{ route('tutor.dashboard') }}" class="block text-gray-700 dark:text-gray-300 hover:text-primary font-medium transition">
+                                Dashboard
+                            </a>
+                        @elseif(auth()->user()->isParent())
+                            <a href="{{ route('parent.dashboard') }}" class="block text-gray-700 dark:text-gray-300 hover:text-primary font-medium transition">
                                 Dashboard
                             </a>
                         @elseif(auth()->user()->isAdmin())

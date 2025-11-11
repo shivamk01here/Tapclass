@@ -41,6 +41,17 @@ class BookingController extends Controller
         $student = auth()->user();
         $tutor = TutorProfile::where('user_id', $request->tutor_id)->firstOrFail();
         
+        // Resolve active child for parent-as-manager flow
+        $childData = [null, null, null, null]; // id, name, age, class_slab
+        if (method_exists($student,'isParent') && $student->isParent()) {
+            $activeChildId = session('active_child_id');
+            $child = $activeChildId ? \App\Models\ParentChild::find($activeChildId) : null;
+            if (!$child) {
+                return back()->withErrors(['error' => 'Please add/select a learner before booking.'])->withInput();
+            }
+            $childData = [$child->id, $child->first_name, $child->age, $child->class_slab];
+        }
+        
         // Calculate duration in hours
         $startTime = Carbon::parse($request->start_time);
         $endTime = Carbon::parse($request->end_time);
@@ -117,6 +128,10 @@ class BookingController extends Controller
                 'location_address' => $request->location ?? null,
                 'notes' => $request->notes ?? null,
                 'meet_link' => $request->session_mode === 'online' ? 'https://meet.google.com/' . uniqid() : null,
+                'child_id' => $childData[0],
+                'child_name' => $childData[1],
+                'child_age' => $childData[2],
+                'child_class_slab' => $childData[3],
             ]);
             
             // Debit from wallet
@@ -139,17 +154,19 @@ class BookingController extends Controller
                 ['booking_id' => $booking->id]
             );
             
+            $who = $student->isParent() ? ($student->name.' (Parent) for '.($childData[1] ?? 'learner')) : $student->name;
             Notification::createForUser(
                 $tutor->user_id,
                 'new_booking',
                 'New Booking',
-                "You have a new booking from {$student->name} on {$request->session_date}.",
+                "You have a new booking from {$who} on {$request->session_date}.",
                 ['booking_id' => $booking->id]
             );
             
             DB::commit();
             
-            return redirect()->route('student.bookings')->with('success', 'Booking created successfully! Booking code: ' . $bookingCode);
+            $route = auth()->user()->isParent() ? 'parent.dashboard' : 'student.bookings';
+            return redirect()->route($route)->with('success', 'Booking created successfully! Booking code: ' . $bookingCode);
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withErrors(['error' => 'Booking failed: ' . $e->getMessage()])->withInput();

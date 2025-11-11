@@ -64,7 +64,7 @@
                 x-data="{ shown: false }" x-intersect.once.threshold(0.3)="shown = true" 
                 class="flex items-center justify-center transition-all ease-out duration-700 delay-100" 
                 :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'">
-                <img src="{{ asset('images/about/mission-illustration.png') }}" alt="Mission statement illustration" class="w-full max-w-md h-auto rounded-lg object-contain" onerror="this.style.display='none'">
+                <img src="{{ asset('images/about/bridge.svg') }}" alt="Mission statement illustration" class="w-full max-w-md h-auto rounded-lg object-contain" onerror="this.style.display='none'">
             </div>
         </div>
     </section>

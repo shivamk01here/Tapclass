@@ -45,8 +45,9 @@ class AuthController extends Controller
                 return redirect()->route('tutor.dashboard');
             } elseif ($user->isAdmin()) {
                 return redirect()->route('admin.dashboard');
+            } elseif ($user->isParent()) {
+                return redirect()->route('parent.dashboard');
             }
-
             return redirect()->intended('/');
         }
 
@@ -158,6 +159,11 @@ class AuthController extends Controller
         return view('auth.register-tutor', compact('subjects'));
     }
 
+    public function showParentRegister()
+    {
+        return view('auth.register-parent');
+    }
+
     public function registerTutor(Request $request)
     {
         $isGoogleAuth = $request->has('google_auth') && session('google_user_data');
@@ -223,6 +229,53 @@ class AuthController extends Controller
         }
     }
 
+    public function registerParent(Request $request)
+    {
+        $isGoogleAuth = $request->has('google_auth') && session('google_user_data');
+        $rules = [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+        ];
+        if (! $isGoogleAuth) {
+            $rules['password'] = 'required|min:6|confirmed';
+        }
+        $validator = \Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+        \DB::beginTransaction();
+        try {
+            $googleData = session('google_user_data');
+            $userData = [
+                'name' => $isGoogleAuth ? $googleData['name'] : $request->name,
+                'email' => $isGoogleAuth ? $googleData['email'] : $request->email,
+                'role' => 'parent',
+                'email_verified_at' => now(),
+            ];
+            if ($isGoogleAuth) {
+                $userData['google_id'] = $googleData['google_id'] ?? null;
+                $userData['password'] = \Hash::make(\Str::random(32));
+            } else {
+                $userData['password'] = \Hash::make($request->password);
+            }
+            $user = \App\Models\User::create($userData);
+            \App\Models\Wallet::create([
+                'user_id' => $user->id,
+                'balance' => 0,
+                'total_credited' => 0,
+                'total_debited' => 0,
+            ]);
+            \DB::commit();
+            // Clear Google session data
+            session()->forget(['google_user_data','oauth_role']);
+            \Auth::login($user);
+            return redirect()->route('onboarding.parent.show')->with('success','Welcome! Add your first learner.');
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            return back()->withErrors(['error' => 'Registration failed: '.$e->getMessage()])->withInput();
+        }
+    }
+
     public function logout(Request $request)
     {
         Auth::logout();
@@ -282,6 +335,8 @@ class AuthController extends Controller
             
             if ($role === 'tutor') {
                 return redirect()->route('register.tutor')->with('google_auth', true);
+            } elseif ($role === 'parent') {
+                return redirect()->route('register.parent')->with('google_auth', true);
             } else {
                 return redirect()->route('register.student')->with('google_auth', true);
             }

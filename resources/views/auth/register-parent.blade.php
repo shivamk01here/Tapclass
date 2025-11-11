@@ -3,11 +3,9 @@
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <title>Tutor Registration - Htc</title>
-  
+  <title>Parent Registration - Htc</title>
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-  
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -26,13 +24,13 @@
       }
     };
   </script>
-  
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
 </head>
 <body class="bg-background-light dark:bg-background-dark font-display overflow-hidden">
   <div class="h-screen w-full grid grid-cols-1 lg:grid-cols-2">
     
+    <!-- Left Side - Illustration (Previously Right) -->
     <div class="hidden lg:flex flex-col justify-center items-center p-16 relative bg-gradient-to-br from-primary/5 via-secondary/5 to-primary/10 dark:from-primary/10 dark:via-secondary/10 dark:to-primary/20 overflow-hidden">
       <div class="absolute top-8 left-8 z-20 hero-logo">
         <a href="{{ route('home') }}" class="inline-flex items-center gap-2">
@@ -40,37 +38,42 @@
         </a>
       </div>
       
+      <!-- Floating Background Elements -->
       <div class="floating-circle absolute top-20 right-20 w-32 h-32 bg-primary/10 rounded-full blur-2xl"></div>
       <div class="floating-circle-2 absolute bottom-32 left-16 w-40 h-40 bg-secondary/10 rounded-full blur-3xl"></div>
       <div class="floating-circle-3 absolute top-1/2 left-1/4 w-24 h-24 bg-primary/5 rounded-full blur-xl"></div>
       
       <div class="relative z-10 text-center max-w-lg hero-content">
-        <h2 class="text-4xl font-black mb-4 leading-tight text-gray-900 dark:text-white">Share your<br/>knowledge.</h2>
-        <p class="text-lg mb-8 text-gray-600 dark:text-gray-300">Join our community of expert tutors and make a real impact on students' lives.</p>
+        <!-- SVG Illustration will go here -->
+        
+        <h2 class="text-4xl font-black mb-4 leading-tight text-gray-900 dark:text-white">Manage learning<br/>for your child.</h2>
+        <p class="text-lg mb-8 text-gray-600 dark:text-gray-300">Add learners, book tutors, and track progress from one place.</p>
       
+        
         <div class="mt-10 flex items-center justify-center gap-8 features">
           <div class="text-center feature-item">
             <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-2">
-              <span class="material-symbols-outlined text-primary text-2xl">schedule</span>
+              <span class="material-symbols-outlined text-primary text-2xl">verified</span>
             </div>
-            <p class="text-xs font-medium text-gray-700 dark:text-gray-300">Teach on your schedule</p>
+            <p class="text-xs font-medium text-gray-700 dark:text-gray-300">Verified Tutors</p>
           </div>
           <div class="text-center feature-item">
             <div class="w-12 h-12 bg-secondary/10 rounded-xl flex items-center justify-center mx-auto mb-2">
-              <span class="material-symbols-outlined text-secondary text-2xl">groups</span>
+              <span class="material-symbols-outlined text-secondary text-2xl">schedule</span>
             </div>
-            <p class="text-xs font-medium text-gray-700 dark:text-gray-300">Access a wide student base</p>
+            <p class="text-xs font-medium text-gray-700 dark:text-gray-300">Flexible Hours</p>
           </div>
           <div class="text-center feature-item">
             <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-2">
-              <span class="material-symbols-outlined text-primary text-2xl">payments</span>
+              <span class="material-symbols-outlined text-primary text-2xl">trending_up</span>
             </div>
-            <p class="text-xs font-medium text-gray-700 dark:text-gray-300">Simple, secure payments</p>
+            <p class="text-xs font-medium text-gray-700 dark:text-gray-300">Track Progress</p>
           </div>
         </div>
       </div>
     </div>
 
+    <!-- Right Side - Form (Previously Left) -->
     <div class="w-full p-8 lg:p-12 flex flex-col justify-center bg-white dark:bg-background-dark overflow-y-auto">
       <div class="max-w-md mx-auto w-full">
         
@@ -80,8 +83,8 @@
               <h2 class="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Htc</h2>
             </a>
           </div>
-          <h1 class="text-2xl font-black text-gray-900 dark:text-white mb-1">Become a Tutor</h1>
-          <p class="text-xs text-gray-500 dark:text-gray-400">Create your account to start teaching</p>
+          <h1 class="text-2xl font-black text-gray-900 dark:text-white mb-1">Create Your Account</h1>
+          <p class="text-xs text-gray-500 dark:text-gray-400">Start managing your child's learning today</p>
         </div>
 
         @if($errors->any())
@@ -96,7 +99,7 @@
 
         @if(!session('google_auth'))
         <div class="mb-5 google-button">
-          <a href="{{ route('auth.google', ['role' => 'tutor']) }}" class="w-full flex items-center justify-center gap-3 px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300 hover:shadow-md group">
+          <a href="{{ route('auth.google', ['role' => 'parent']) }}" class="w-full flex items-center justify-center gap-3 px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300 hover:shadow-md group">
             <svg class="w-4 h-4" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
               <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -121,7 +124,7 @@
 
         @php $googleData = session('google_user_data'); @endphp
 
-        <form method="POST" action="{{ route('register.tutor') }}" class="space-y-4 registration-form">
+        <form method="POST" action="{{ route('register.parent') }}" class="space-y-4 registration-form">
           @csrf
           @if(session('google_auth'))
             <input type="hidden" name="google_auth" value="1">
@@ -144,7 +147,7 @@
               <input type="password" name="password" required class="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3.5 py-2 text-sm text-gray-900 dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" placeholder="••••••••" />
             </div>
             <div class="form-field">
-              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Confirm</Text>
+              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Confirm</label>
               <input type="password" name="password_confirmation" required class="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3.5 py-2 text-sm text-gray-900 dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" placeholder="••••••••" />
             </div>
           </div>
@@ -158,14 +161,10 @@
           </div>
         </form>
 
-        <div class="mt-5 text-center footer-text space-y-2">
+        <div class="mt-5 text-center footer-text">
           <p class="text-xs text-gray-500 dark:text-gray-400">
             Already have an account? 
             <a href="{{ route('login') }}" class="text-primary font-semibold hover:underline ml-1">Sign in</a>
-          </p>
-          <p class="text-xs text-gray-500 dark:text-gray-400">
-            Want to learn? 
-            <a href="{{ route('register.student') }}" class="text-secondary font-semibold hover:underline ml-1">Register as Student</a>
           </p>
         </div>
       </div>
@@ -173,11 +172,14 @@
   </div>
 
   <script>
+    // GSAP Animations
     gsap.registerPlugin();
 
+    // Animate form elements on load
     window.addEventListener('DOMContentLoaded', () => {
       const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
+      // Form side animations
       tl.from('.form-header', {
         y: 30,
         opacity: 0,
@@ -204,6 +206,7 @@
         duration: 0.5
       }, '-=0.3');
 
+      // Hero side animations
       gsap.from('.hero-logo', {
         y: -20,
         opacity: 0,
@@ -241,6 +244,7 @@
         delay: 0.9
       });
 
+      // Floating animations for background elements
       gsap.to('.floating-circle', {
         y: -30,
         x: 20,
@@ -268,6 +272,7 @@
         ease: 'sine.inOut'
       });
 
+      // Input focus animations
       document.querySelectorAll('input').forEach(input => {
         input.addEventListener('focus', function() {
           gsap.to(this, {
