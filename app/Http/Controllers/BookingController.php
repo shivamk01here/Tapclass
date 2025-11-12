@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Booking;
 use App\Models\TutorProfile;
+use App\Models\Subject;
 use App\Models\TutorEarning;
 use App\Models\SiteSetting;
 use App\Models\Notification;
@@ -13,30 +14,59 @@ use Carbon\Carbon;
 
 class BookingController extends Controller
 {
-    public function create($tutorId)
+public function create($tutorId, Request $request)
     {
+        // Block tutors from booking
+        if (auth()->check() && method_exists(auth()->user(), 'isTutor') && auth()->user()->isTutor()) {
+            return back()->with('toast_error', "You're logged in as a tutor. Please switch to a student account to book.");
+        }
+
         $tutor = TutorProfile::with(['user', 'subjects'])
             ->where('user_id', $tutorId)
             ->where('verification_status', 'verified')
             ->firstOrFail();
         
         $tutorProfile = $tutor;
-        $subjects = $tutor->subjects;
+
+        $isConsultation = $request->get('type') === 'consultation';
+        if ($isConsultation) {
+            // Ensure a Consultation subject exists
+            $consult = Subject::firstOrCreate(
+                ['slug' => 'consultation'],
+                ['name' => 'Consultation', 'icon' => null, 'is_active' => true]
+            );
+            $subjects = collect([$consult]);
+        } else {
+            $subjects = $tutor->subjects;
+        }
         
-        return view('student.booking-create-modern', compact('tutor', 'tutorProfile', 'subjects'));
+        return view('student.booking-create-modern', compact('tutor', 'tutorProfile', 'subjects', 'isConsultation'));
     }
 
-    public function store(Request $request)
+public function store(Request $request)
     {
-        $request->validate([
+        // Block tutors from booking
+        if (auth()->check() && method_exists(auth()->user(), 'isTutor') && auth()->user()->isTutor()) {
+            return back()->with('toast_error', "Tutors cannot book sessions. Please use a student account.");
+        }
+
+        $isConsultation = $request->get('type') === 'consultation';
+
+        $rules = [
             'tutor_id' => 'required|exists:users,id',
-            'subject_id' => 'required|exists:subjects,id',
-            'session_mode' => 'required|in:online,in-person',
             'session_date' => 'required|date|after_or_equal:today',
             'start_time' => 'required',
             'end_time' => 'required',
-            'location' => 'required_if:session_mode,in-person',
-        ]);
+        ];
+        if ($isConsultation) {
+            // Online consultation by default
+            $rules['session_mode'] = 'nullable|in:online,in-person';
+        } else {
+            $rules['subject_id'] = 'required|exists:subjects,id';
+            $rules['session_mode'] = 'required|in:online,in-person';
+            $rules['location'] = 'required_if:session_mode,in-person';
+        }
+        $request->validate($rules);
 
         $student = auth()->user();
         $tutor = TutorProfile::where('user_id', $request->tutor_id)->firstOrFail();
@@ -57,15 +87,23 @@ class BookingController extends Controller
         $endTime = Carbon::parse($request->end_time);
         $durationHours = $startTime->diffInMinutes($endTime) / 60;
         
-        // Get subject-specific rate
-        $tutorSubject = $tutor->subjects()->where('subject_id', $request->subject_id)->first();
-        if (!$tutorSubject) {
-            return back()->withErrors(['error' => 'Tutor does not teach this subject.'])->withInput();
+// Subject and rate resolution
+        if ($isConsultation) {
+            $consult = Subject::firstOrCreate(['slug' => 'consultation'], ['name' => 'Consultation', 'is_active' => true]);
+            $request->merge(['subject_id' => $consult->id]);
+            if (!$request->filled('session_mode')) {
+                $request->merge(['session_mode' => 'online']);
+            }
+            $hourlyRate = $tutor->hourly_rate; // general consultation fee
+        } else {
+            $tutorSubject = $tutor->subjects()->where('subject_id', $request->subject_id)->first();
+            if (!$tutorSubject) {
+                return back()->withErrors(['error' => 'Tutor does not teach this subject.'])->withInput();
+            }
+            $hourlyRate = $request->session_mode === 'online' ? 
+                $tutorSubject->pivot->online_rate : 
+                $tutorSubject->pivot->offline_rate;
         }
-        
-        $hourlyRate = $request->session_mode === 'online' ? 
-            $tutorSubject->pivot->online_rate : 
-            $tutorSubject->pivot->offline_rate;
         
         if (!$hourlyRate) {
             return back()->withErrors(['error' => 'This session mode is not available for the selected subject.'])->withInput();

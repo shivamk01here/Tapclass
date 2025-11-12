@@ -30,7 +30,18 @@
 </div>
 @endif
 <div>
-<p class="font-semibold text-gray-900">{{ $student->name }}</p>
+<p class="font-semibold text-gray-900 flex items-center gap-2">{{ $student->name }}
+  @if($student->studentProfile && ($student->studentProfile->onboarding_completed ?? false))
+    <span class="px-2 py-0.5 rounded-full text-[10px] bg-green-100 text-green-800">Onboarding Completed</span>
+  @else
+    <span class="px-2 py-0.5 rounded-full text-[10px] bg-amber-100 text-amber-800">Onboarding Pending</span>
+  @endif
+  @if($student->email_verified_at)
+    <span class="px-2 py-0.5 rounded-full text-[10px] bg-blue-100 text-blue-800">Email Verified</span>
+  @else
+    <span class="px-2 py-0.5 rounded-full text-[10px] bg-gray-100 text-gray-700">Email Unverified</span>
+  @endif
+</p>
 <p class="text-xs text-gray-500">ID: {{ $student->id }}</p>
 </div>
 </div>

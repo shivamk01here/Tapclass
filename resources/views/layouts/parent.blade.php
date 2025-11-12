@@ -15,8 +15,10 @@
 @include('components.sidebar', [
   'dashboardRoute' => route('parent.dashboard'),
   'settingsRoute' => route('parent.learners'),
-  'menuItems' => [
+'menuItems' => [
     ['icon'=>'home','label'=>'Dashboard','route'=>route('parent.dashboard'),'active'=>request()->routeIs('parent.dashboard')||request()->routeIs('parent.dashboard.alt')],
+    ['icon'=>'account_balance_wallet','label'=>'Wallet','route'=>route('parent.wallet'),'active'=>request()->routeIs('parent.wallet')],
+    ['icon'=>'favorite','label'=>'Wishlist','route'=>route('parent.wishlist'),'active'=>request()->routeIs('parent.wishlist')],
     ['icon'=>'search','label'=>'Find Tutor','route'=>route('tutors.search'),'active'=>request()->routeIs('tutors.search')],
     ['icon'=>'family_restroom','label'=>'My Learners','route'=>route('parent.learners'),'active'=>request()->routeIs('parent.learners')],
     ['icon'=>'call','label'=>'Advisor','route'=>route('parent.consultation'),'active'=>request()->routeIs('parent.consultation')],
@@ -80,7 +82,19 @@
   </main>
 </div>
 
+<div id="dev-toast" class="fixed bottom-4 right-4 z-50 hidden">
+  <div class="px-4 py-2 rounded-lg bg-gray-900 text-white text-sm shadow-lg">Feature in development</div>
+</div>
+
 @stack('scripts')
+<script>
+  function showDevToast(message = 'Feature in development'){
+    const t = document.getElementById('dev-toast');
+    t.querySelector('div').textContent = message;
+    t.classList.remove('hidden');
+    setTimeout(()=> t.classList.add('hidden'), 2500);
+  }
+</script>
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </body>
 </html>

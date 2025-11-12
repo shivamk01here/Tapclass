@@ -67,16 +67,10 @@ class AuthController extends Controller
         $isGoogleAuth = $request->has('google_auth') && session('google_user_data');
         
         $rules = [
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'phone' => 'nullable|string|max:20',
-            'grade' => 'nullable|string|max:50',
-            'location' => 'required|string|max:255',
-            'latitude' => 'nullable|numeric',
-            'longitude' => 'nullable|numeric',
-            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'subjects_of_interest' => 'nullable|array',
-            'subjects_of_interest.*' => 'exists:subjects,id',
+            'first_name' => $isGoogleAuth ? 'nullable' : 'required|string|max:100',
+            'last_name'  => $isGoogleAuth ? 'nullable' : 'required|string|max:100',
+            'email'      => 'required|email|unique:users,email',
+            'class_slab' => 'required|in:1-5,6-8,9-12,undergrad,postgrad',
         ];
         
         // Password only required for non-Google registration
@@ -84,6 +78,7 @@ class AuthController extends Controller
             $rules['password'] = 'required|min:6|confirmed';
         }
         
+        $validator = Validator::make($request->all(), $rules);
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
@@ -95,20 +90,15 @@ class AuthController extends Controller
         try {
             $googleData = session('google_user_data');
             
-            // Handle profile picture upload
-            $profilePicturePath = null;
-            if ($request->hasFile('profile_picture')) {
-                $profilePicturePath = $request->file('profile_picture')->store('profile_pictures', 'public');
-            }
+            // Minimal registration mapping
+            $fullName = $isGoogleAuth ? ($googleData['name'] ?? '') : trim(($request->first_name ?? '').' '.($request->last_name ?? ''));
             
             // Create user
             $userData = [
-                'name' => $isGoogleAuth ? $googleData['name'] : $request->name,
+                'name' => $fullName,
                 'email' => $isGoogleAuth ? $googleData['email'] : $request->email,
-                'phone' => $request->phone,
                 'role' => 'student',
                 'email_verified_at' => now(),
-                'profile_picture' => $profilePicturePath,
             ];
             
             if ($isGoogleAuth) {
@@ -120,14 +110,15 @@ class AuthController extends Controller
             
             $user = User::create($userData);
 
-            // Create student profile with subject preferences and location
+            // Create minimal student profile; other details collected in onboarding
             StudentProfile::create([
                 'user_id' => $user->id,
-                'grade' => $request->grade,
-                'location' => $request->location,
-                'latitude' => $request->latitude,
-                'longitude' => $request->longitude,
-                'subjects_of_interest' => $request->subjects_of_interest ?? [],
+                'grade' => $request->class_slab,
+                'location' => null,
+                'pin_code' => null,
+                'latitude' => null,
+                'longitude' => null,
+                'subjects_of_interest' => [],
             ]);
 
             // Create wallet with default balance

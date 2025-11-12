@@ -42,10 +42,10 @@
 </div>
 
 <div class="flex gap-2">
-<a href="{{ route('student.tutor.profile', $tutor->id) }}" class="flex-1 text-center bg-gray-100 px-4 py-2 rounded-lg hover:bg-gray-200 text-sm font-medium">
+<a href="{{ route('student.tutor.profile', $tutor->user_id) }}" class="flex-1 text-center bg-gray-100 px-4 py-2 rounded-lg hover:bg-gray-200 text-sm font-medium">
 View Profile
 </a>
-<a href="{{ route('student.booking.create', $tutor->id) }}" class="flex-1 text-center bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 text-sm font-medium">
+<a href="{{ route('student.booking.create', $tutor->user_id) }}" class="flex-1 text-center bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 text-sm font-medium">
 Book Now
 </a>
 </div>
@@ -54,7 +54,7 @@ Book Now
 <div class="col-span-3 text-center py-12">
 <span class="material-symbols-outlined text-gray-300 text-6xl mb-4">favorite_border</span>
 <p class="text-gray-500">No tutors in your wishlist yet</p>
-<a href="{{ route('student.find-tutor') }}" class="inline-block mt-4 bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary/90">
+<a href="{{ route('tutors.search') }}" class="inline-block mt-4 bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary/90">
 Find Tutors
 </a>
 </div>

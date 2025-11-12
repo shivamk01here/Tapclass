@@ -69,5 +69,6 @@ class Kernel extends HttpKernel
         'tutor.verification' => \App\Http\Middleware\TutorVerificationMiddleware::class,
         'parent.onboarded' => \App\Http\Middleware\EnsureParentOnboarded::class,
         'parent.active_child' => \App\Http\Middleware\EnsureActiveChildSelected::class,
+        'student.onboarded' => \App\Http\Middleware\EnsureStudentOnboarded::class,
     ];
 }

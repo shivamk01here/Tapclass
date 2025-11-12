@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Book a Session with {{ $tutor->user->name }} - Htc</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -13,14 +13,14 @@
       tailwind.config = {
         theme: {
           extend: {
-            colors: { "primary": "#4F7EFF", "secondary": "#FFA500" },
-            fontFamily: { "sans": ["Inter", "sans-serif"] }
+            colors: { primary: '#13a4ec', secondary: '#FFA500' },
+            fontFamily: { sans: ['Manrope','sans-serif'] }
           }
         }
       }
     </script>
 </head>
-<body class="bg-gray-50 font-sans">
+<body class="bg-gray-50 font-sans text-[14px]">
 
 <!-- Header -->
 <header class="bg-white border-b border-gray-200 px-6 py-4">
@@ -38,9 +38,13 @@
 <!-- Main Content -->
 <main class="max-w-6xl mx-auto px-4 py-8">
     <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">Book a Session with {{ $tutor->user->name }}</h1>
-        <p class="text-gray-600">Complete the steps below to schedule your session</p>
+<h1 class="text-2xl font-extrabold text-gray-900 mb-2">{{ isset($isConsultation) && $isConsultation ? 'Book a Consultation' : 'Book a Session' }} with {{ $tutor->user->name }}</h1>
+        <p class="text-gray-600">Complete the steps below to schedule your {{ (isset($isConsultation) && $isConsultation) ? 'consultation' : 'session' }}</p>
     </div>
+
+@if(session('toast_error'))
+    <div class="fixed top-4 right-4 z-50 bg-red-50 text-red-700 border border-red-200 px-4 py-2 rounded-lg shadow">{{ session('toast_error') }}</div>
+    @endif
 
     @if($errors->any())
     <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6">
@@ -72,7 +76,10 @@
         </div>
     </div>
 
-    <form method="POST" action="{{ auth()->check() && auth()->user()->isParent() ? route('parent.booking.store') : route('student.booking.store') }}" id="bookingForm">
+<form method="POST" action="{{ auth()->check() && auth()->user()->isParent() ? route('parent.booking.store') : route('student.booking.store') }}" id="bookingForm">
+        @if(isset($isConsultation) && $isConsultation)
+          <input type="hidden" name="type" value="consultation" />
+        @endif
         @csrf
         <input type="hidden" name="tutor_id" value="{{ $tutor->user_id }}"/>
 
@@ -86,18 +93,20 @@
                     
                     <div class="mb-6">
                         <label class="block font-semibold mb-3 text-gray-700">Choose Subject</label>
-                        <select name="subject_id" id="subjectSelect" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" required>
-                            <option value="">Select a subject...</option>
+<select name="subject_id" id="subjectSelect" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" required {{ (isset($isConsultation) && $isConsultation) ? 'disabled' : '' }}>
                             @foreach($subjects as $subject)
                                 <option value="{{ $subject->id }}" 
-                                    data-online-rate="{{ $subject->pivot->online_rate ?? 0 }}" 
-                                    data-offline-rate="{{ $subject->pivot->offline_rate ?? 0 }}"
-                                    data-online-available="{{ $subject->pivot->is_online_available ? 1 : 0 }}"
-                                    data-offline-available="{{ $subject->pivot->is_offline_available ? 1 : 0 }}">
+                                    data-online-rate="{{ isset($isConsultation) && $isConsultation ? (int)$tutor->hourly_rate : ($subject->pivot->online_rate ?? 0) }}" 
+                                    data-offline-rate="{{ isset($isConsultation) && $isConsultation ? '' : ($subject->pivot->offline_rate ?? 0) }}"
+                                    data-online-available="{{ isset($isConsultation) && $isConsultation ? 1 : ($subject->pivot->is_online_available ? 1 : 0) }}"
+                                    data-offline-available="{{ isset($isConsultation) && $isConsultation ? 0 : ($subject->pivot->is_offline_available ? 1 : 0) }}" selected>
                                     {{ $subject->name }}
                                 </option>
                             @endforeach
                         </select>
+                        @if(isset($isConsultation) && $isConsultation)
+                          <input type="hidden" name="subject_id" value="{{ $subjects->first()->id }}" />
+                        @endif
                     </div>
 
                     <div class="mb-6">
@@ -113,7 +122,7 @@
                                 <div class="absolute inset-0 border-2 border-primary bg-primary/5 rounded-xl opacity-0 peer-checked:opacity-100 pointer-events-none"></div>
                             </label>
                             
-                            <label class="relative flex items-center p-4 border-2 border-gray-300 rounded-xl cursor-pointer hover:border-primary transition-all" id="offlineOption" style="display: none;">
+<label class="relative flex items-center p-4 border-2 border-gray-300 rounded-xl cursor-pointer hover:border-primary transition-all" id="offlineOption" style="display: {{ (isset($isConsultation) && $isConsultation) ? 'none' : 'none' }};">
                                 <input type="radio" name="session_mode" value="offline" class="peer sr-only"/>
                                 <div class="flex-1">
                                     <p class="font-semibold mb-1">Offline Session</p>
@@ -126,7 +135,7 @@
                         <p class="text-sm text-gray-500 mt-2" id="modeHint">Please select a subject first</p>
                     </div>
 
-                    <button type="button" onclick="goToStep(2)" id="step1Next" class="w-full py-3 bg-primary text-white rounded-xl font-semibold hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+<button type="button" onclick="goToStep(2)" id="step1Next" class="w-full py-3 bg-primary text-white rounded-xl font-semibold hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed" {{ (isset($isConsultation) && $isConsultation) ? '' : 'disabled' }}>
                         Continue to Date & Time
                     </button>
                 </div>

@@ -31,7 +31,10 @@ class TutorProfile extends Model
         'teaching_mode',
         'city',
         'state',
-        'qualification',
+'qualification',
+        'gender',
+        'travel_radius_km',
+        'grade_levels',
         'onboarding_completed',
         'onboarding_step',
     ];
@@ -41,7 +44,8 @@ class TutorProfile extends Model
         'average_rating' => 'decimal:2',
         'latitude' => 'decimal:8',
         'longitude' => 'decimal:8',
-        'onboarding_completed' => 'boolean',
+'onboarding_completed' => 'boolean',
+        'grade_levels' => 'array',
     ];
 
     public function user()
@@ -73,7 +77,8 @@ class TutorProfile extends Model
 
     public function likes()
     {
-        return $this->hasMany(TutorLike::class, 'tutor_id');
+        // Likes are stored against the tutor's user_id, not the tutor_profiles.id
+        return $this->hasMany(TutorLike::class, 'tutor_id', 'user_id');
     }
 
     public function bookings()

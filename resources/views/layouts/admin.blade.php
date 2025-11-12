@@ -62,6 +62,12 @@
                     <span class="material-symbols-outlined">group</span>
                     <span>Students</span>
                 </a>
+
+                <a href="{{ route('admin.parents') }}" 
+                   class="flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-colors {{ request()->routeIs('admin.parents*') ? 'bg-primary/10 text-primary' : 'text-gray-700 hover:bg-gray-100' }}">
+                    <span class="material-symbols-outlined">family_restroom</span>
+                    <span>Parents</span>
+                </a>
                 
                 <a href="{{ route('admin.bookings') }}" 
                    class="flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-colors {{ request()->routeIs('admin.bookings') ? 'bg-primary/10 text-primary' : 'text-gray-700 hover:bg-gray-100' }}">
@@ -73,6 +79,12 @@
                    class="flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-colors {{ request()->routeIs('admin.payouts') ? 'bg-primary/10 text-primary' : 'text-gray-700 hover:bg-gray-100' }}">
                     <span class="material-symbols-outlined">payments</span>
                     <span>Payouts</span>
+                </a>
+
+                <a href="{{ route('admin.consultations') }}" 
+                   class="flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-colors {{ request()->routeIs('admin.consultations*') ? 'bg-primary/10 text-primary' : 'text-gray-700 hover:bg-gray-100' }}">
+                    <span class="material-symbols-outlined">support_agent</span>
+                    <span>Consultations</span>
                 </a>
                 
                 <a href="{{ route('admin.settings') }}" 

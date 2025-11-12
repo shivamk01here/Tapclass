@@ -1,3 +1,8 @@
+{{--
+    THIS IS YOUR NEW /resources/views/components/testimonials.blade.php FILE
+    It has been re-styled to match the new "Sinau" theme.
+--}}
+
 @php
     $items = [
         [
@@ -38,76 +43,86 @@
     ];
 @endphp
 
-<section class="flex flex-col gap-6">
-  <div 
-    x-data="{ shown: false }" x-intersect.once.threshold(0.3)="shown = true" 
-    class="flex flex-col gap-2 text-center transition-all ease-out duration-700" 
-    :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'">
-    <h2 class="text-3xl md:text-4xl font-bold tracking-[-0.015em]">Testimonials</h2>
-    <p class="text-subtext-light dark:text-subtext-dark max-w-3xl mx-auto">Real stories from students, tutors, and parents using Htc every day.</p>
-  </div>
+<!-- Added consistent padding like other sections -->
+<section class="py-16 md:py-24" id="testimonials">
+    <div class="max-w-7xl mx-auto px-4">
+        
+        <!-- Re-styled Title Block -->
+        <div class="flex flex-col gap-4 text-center mb-12">
+            <h2 class="font-heading text-4xl uppercase leading-tight font-normal">Testimonials</h2>
+            <p class="text-lg text-text-subtle max-w-3xl mx-auto">Real stories from students, tutors, and parents using TutorConsult every day.</p>
+        </div>
 
-  <div class="relative">
-    <div class="swiper testimonials-swiper">
-      <div class="swiper-wrapper">
-        @foreach($items as $t)
-          <div class="swiper-slide !h-auto">
-            <div class="h-full flex flex-col gap-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-background-dark/50 p-6 shadow-sm">
-              <p class="text-base text-gray-700 dark:text-gray-300">“{{ $t['quote'] }}”</p>
-              <div class="mt-auto flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center text-primary font-bold">
-                    {{ substr($t['name'],0,1) }}
-                  </div>
-                  <div>
-                    <p class="font-bold leading-tight">{{ $t['name'] }}</p>
-                    <p class="text-xs text-subtext-light dark:text-subtext-dark">{{ $t['role'] }}</p>
-                  </div>
+        <div class="relative">
+            <div class="swiper testimonials-swiper">
+                <div class="swiper-wrapper">
+                    @foreach($items as $t)
+                    <div class="swiper-slide !h-auto">
+                        <!-- Re-styled Testimonial Card -->
+                        <div class="h-full flex flex-col gap-4 rounded-xl border-2 border-black bg-white p-6 shadow-button-chunky">
+                            <p class="text-base text-black">“{{ $t['quote'] }}”</p>
+                            <div class="mt-auto flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <!-- Re-styled Avatar -->
+                                    <div class="w-10 h-10 rounded-full bg-subscribe-bg flex items-center justify-center text-primary font-bold">
+                                        {{ substr($t['name'],0,1) }}
+                                    </div>
+                                    <div>
+                                        <p class="font-bold leading-tight text-black">{{ $t['name'] }}</p>
+                                        <p class="text-xs text-text-subtle">{{ $t['role'] }}</p>
+                                    </div>
+                                </div>
+                                <!-- Re-styled Rating (New color and icon) -->
+                                <div class="flex text-accent-yellow">
+                                    @for($i=0;$i<$t['rating'];$i++)
+                                        <i class="bi bi-star-fill text-lg"></i>
+                                    @endfor
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
                 </div>
-                <div class="flex text-secondary">
-                  @for($i=0;$i<$t['rating'];$i++)
-                    <span class="material-symbols-outlined text-[18px]">star</span>
-                  @endfor
+                <!-- Re-styled Navigation Buttons (Chunky) -->
+                <div class="mt-8 flex items-center justify-center gap-4">
+                    <button class="testimonials-prev w-12 h-12 rounded-lg bg-white border-2 border-black flex items-center justify-center shadow-button-chunky relative top-0 transition-all duration-100 ease-in-out hover:top-0.5 hover:shadow-button-chunky-hover active:top-1 active:shadow-button-chunky-active">
+                        <i class="bi bi-arrow-left text-xl text-black"></i>
+                    </button>
+                    <button class="testimonials-next w-12 h-12 rounded-lg bg-accent-yellow border-2 border-black flex items-center justify-center shadow-button-chunky relative top-0 transition-all duration-100 ease-in-out hover:top-0.5 hover:shadow-button-chunky-hover active:top-1 active:shadow-button-chunky-active">
+                        <i class="bi bi-arrow-right text-xl text-black"></i>
+                    </button>
                 </div>
-              </div>
             </div>
-          </div>
-        @endforeach
-      </div>
-      <div class="mt-6 flex items-center justify-center gap-4">
-        <button class="testimonials-prev w-10 h-10 rounded-full border border-gray-300 dark:border-gray-700 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 transition"><span class="material-symbols-outlined">arrow_back</span></button>
-        <button class="testimonials-next w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center hover:bg-primary/90 transition"><span class="material-symbols-outlined">arrow_forward</span></button>
-      </div>
+        </div>
     </div>
-  </div>
 </section>
 
 @push('styles')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
 <style>
-  /* Linear, constant-speed scroll */
-  .testimonials-swiper .swiper-wrapper { transition-timing-function: linear !important; }
+    /* Linear, constant-speed scroll (Kept as per your code) */
+    .testimonials-swiper .swiper-wrapper { transition-timing-function: linear !important; }
 </style>
 @endpush
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
 <script>
-  const swiper = new Swiper('.testimonials-swiper', {
-    loop: true,
-    slidesPerView: 1.1,
-    spaceBetween: 16,
-    speed: 8000, // higher = slower per slide; used with linear timing
-    autoplay: { delay: 0, disableOnInteraction: false, pauseOnMouseEnter: true },
-    breakpoints: {
-      640: { slidesPerView: 1.5 },
-      768: { slidesPerView: 2.2 },
-      1024: { slidesPerView: 3.2 },
-    },
-    navigation: {
-      nextEl: '.testimonials-next',
-      prevEl: '.testimonials-prev',
-    },
-  });
+    const swiper = new Swiper('.testimonials-swiper', {
+        loop: true,
+        slidesPerView: 1.1,
+        spaceBetween: 16,
+        speed: 8000, // higher = slower per slide; used with linear timing
+        autoplay: { delay: 0, disableOnInteraction: false, pauseOnMouseEnter: true },
+        breakpoints: {
+            640: { slidesPerView: 1.5 },
+            768: { slidesPerView: 2.2 },
+            1024: { slidesPerView: 3.2 },
+        },
+        navigation: {
+            nextEl: '.testimonials-next',
+            prevEl: '.testimonials-prev',
+        },
+    });
 </script>
 @endpush

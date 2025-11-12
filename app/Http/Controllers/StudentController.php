@@ -173,6 +173,18 @@ class StudentController extends Controller
         return view('student.notifications', compact('notifications'));
     }
 
+    public function notificationsJson()
+    {
+        $items = Notification::where('user_id', auth()->id())
+            ->orderBy('created_at','desc')
+            ->limit(20)
+            ->get(['id','title','message','is_read','created_at']);
+        return response()->json([
+            'notifications' => $items,
+            'unread_count' => Notification::where('user_id', auth()->id())->where('is_read', false)->count(),
+        ]);
+    }
+
     public function profile()
     {
         $student = auth()->user();

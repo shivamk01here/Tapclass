@@ -156,8 +156,8 @@ async function toggleLike(tutorId) {
         });
         const data = await response.json();
         if (data.success) {
-            const btn = document.querySelector(`[data-tutor-id="${tutorId}"]`);
-            btn.textContent = data.is_liked ? '❤️' : '🤍';
+            const btn = document.querySelector(`[data-tutor-id=\"${tutorId}\"]`);
+            btn.textContent = data.liked ? '❤️' : '🤍';
         }
     } catch (error) {
         console.error('Error:', error);

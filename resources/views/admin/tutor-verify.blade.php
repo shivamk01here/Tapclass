@@ -49,13 +49,67 @@
         <div class="bg-white rounded-lg border p-6">
             <h2 class="text-xl font-bold mb-4">Professional Details</h2>
             <dl class="space-y-3">
-                <div>
-                    <dt class="text-sm text-gray-500">Education</dt>
-                    <dd class="font-semibold">{{ $profile->education }}</dd>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <dt class="text-sm text-gray-500">Education</dt>
+                        <dd class="font-semibold">{{ $profile->education ?? $profile->qualification ?? '—' }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm text-gray-500">Experience</dt>
+                        <dd class="font-semibold">{{ (int)$profile->experience_years }} years</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm text-gray-500">Gender</dt>
+                        <dd class="font-semibold">{{ ucfirst($profile->gender ?? '—') }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm text-gray-500">Consultation Fee</dt>
+                        <dd class="font-semibold">₹{{ number_format((int)$profile->hourly_rate,0) }}/hr</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm text-gray-500">Teaching Mode</dt>
+                        <dd class="font-semibold">{{ ucfirst($profile->teaching_mode ?? '—') }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm text-gray-500">Travel Radius</dt>
+                        <dd class="font-semibold">{{ $profile->travel_radius_km ? $profile->travel_radius_km.' km' : '—' }}</dd>
+                    </div>
                 </div>
                 <div>
-                    <dt class="text-sm text-gray-500">Experience</dt>
-                    <dd class="font-semibold">{{ $profile->experience_years }} years</dd>
+                    <dt class="text-sm text-gray-500">Languages</dt>
+                    <dd class="font-semibold">{{ !empty($languages) ? implode(', ', $languages) : '—' }}</dd>
+                </div>
+                @if(!empty($gradeLevels))
+                <div>
+                    <dt class="text-sm text-gray-500">Grades/Levels</dt>
+                    <dd class="mt-1 flex flex-wrap gap-2">
+                        @foreach($gradeLevels as $gl)
+                            <span class="px-2 py-1 bg-gray-100 rounded-full text-xs">{{ is_string($gl) ? strtoupper($gl) : json_encode($gl) }}</span>
+                        @endforeach
+                    </dd>
+                </div>
+                @endif
+            </dl>
+        </div>
+
+        <div class="bg-white rounded-lg border p-6">
+            <h2 class="text-xl font-bold mb-4">Location</h2>
+            <dl class="grid grid-cols-2 gap-4">
+                <div>
+                    <dt class="text-sm text-gray-500">City</dt>
+                    <dd class="font-semibold">{{ $profile->city ?? '—' }}</dd>
+                </div>
+                <div>
+                    <dt class="text-sm text-gray-500">State</dt>
+                    <dd class="font-semibold">{{ $profile->state ?? '—' }}</dd>
+                </div>
+                <div>
+                    <dt class="text-sm text-gray-500">PIN Code</dt>
+                    <dd class="font-semibold">{{ $profile->pin_code ?? '—' }}</dd>
+                </div>
+                <div>
+                    <dt class="text-sm text-gray-500">Coordinates</dt>
+                    <dd class="font-semibold">{{ $profile->latitude ? ($profile->latitude.', '.$profile->longitude) : '—' }}</dd>
                 </div>
             </dl>
         </div>

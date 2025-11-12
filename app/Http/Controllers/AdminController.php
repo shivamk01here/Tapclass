@@ -9,6 +9,7 @@ use App\Models\WithdrawalRequest;
 use App\Models\Subject;
 use App\Models\SiteSetting;
 use App\Models\Notification;
+use App\Models\ParentConsultation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -65,8 +66,16 @@ class AdminController extends Controller
         $tutor = $tutorProfile->user;
         $profile = $tutorProfile;
         $subjects = $tutorProfile->subjects;
+
+        // Extra details
+        $languages = \DB::table('tutor_profile_language')
+            ->join('languages','tutor_profile_language.language_id','=','languages.id')
+            ->where('tutor_profile_language.tutor_profile_id', $tutorProfile->id)
+            ->pluck('languages.name')
+            ->toArray();
+        $gradeLevels = is_array($tutorProfile->grade_levels) ? $tutorProfile->grade_levels : (empty($tutorProfile->grade_levels) ? [] : (array)$tutorProfile->grade_levels);
         
-        return view('admin.tutor-verify', compact('tutor', 'profile', 'subjects'));
+        return view('admin.tutor-verify', compact('tutor', 'profile', 'subjects','languages','gradeLevels'));
     }
 
     public function approveTutor(Request $request, $id)
@@ -155,6 +164,42 @@ class AdminController extends Controller
         return view('admin.students', compact('students'));
     }
 
+    public function parents()
+    {
+        $parents = User::with(['children', 'wallet'])
+            ->where('role', 'parent')
+            ->latest()
+            ->paginate(20);
+
+        $stats = [
+            'total' => User::where('role','parent')->count(),
+            'with_children' => User::where('role','parent')->whereHas('children')->count(),
+        ];
+
+        return view('admin.parents', compact('parents','stats'));
+    }
+
+    public function parentShow($id)
+    {
+        $parent = User::with(['children.bookings', 'wallet'])
+            ->where('role','parent')
+            ->findOrFail($id);
+
+        $consultations = \App\Models\ParentConsultation::with(['child'])
+            ->where('parent_user_id', $parent->id)
+            ->latest()
+            ->get();
+
+        $childIds = $parent->children->pluck('id');
+        $totalBookings = \App\Models\Booking::whereIn('child_id', $childIds)->count();
+
+        return view('admin.parent-show', [
+            'parent' => $parent,
+            'consultations' => $consultations,
+            'totalBookings' => $totalBookings,
+        ]);
+    }
+
     public function adjustWallet(Request $request, $id)
     {
         $request->validate([
@@ -208,9 +253,9 @@ class AdminController extends Controller
                 'approved_at' => now(),
             ]);
             
-            // Mark earnings as withdrawn
+            // Mark earnings as withdrawn (honor both 'available' and 'requested')
             \App\Models\TutorEarning::where('tutor_id', $payout->tutor_id)
-                ->where('status', 'available')
+                ->whereIn('status', ['available','requested'])
                 ->update([
                     'status' => 'withdrawn',
                     'withdrawn_at' => now(),
@@ -287,5 +332,27 @@ class AdminController extends Controller
         ];
         
         return view('admin.analytics', compact('data'));
+    }
+
+    public function consultations(Request $request)
+    {
+        $status = $request->get('status');
+        $query = ParentConsultation::with(['parent','child'])->latest();
+        if ($status) {
+            $query->where('status', $status);
+        }
+        $consultations = $query->paginate(20);
+        return view('admin.consultations', compact('consultations','status'));
+    }
+
+    public function updateConsultationStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:requested,contacted,in_progress,scheduled,completed,cancelled,resolved',
+        ]);
+        $c = ParentConsultation::findOrFail($id);
+        $c->status = $request->status;
+        $c->save();
+        return back()->with('success','Consultation status updated.');
     }
 }

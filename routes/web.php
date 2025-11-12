@@ -18,6 +18,12 @@ use App\Http\Controllers\ReviewController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
+// Subject suggestions (public)
+Route::get('/subjects/suggest', [\App\Http\Controllers\StudentOnboardingController::class, 'suggestSubjects'])->name('subjects.suggest');
+// Languages suggestions and creation
+Route::get('/languages/suggest', [\App\Http\Controllers\TutorController::class, 'suggestLanguages'])->name('languages.suggest');
+Route::post('/languages', [\App\Http\Controllers\TutorController::class, 'createLanguage'])->middleware('auth')->name('languages.create');
+
 // Static Pages
 Route::view('/about', 'pages.about')->name('about');
 Route::view('/contact', 'pages.contact')->name('contact');
@@ -57,15 +63,23 @@ Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallbac
 |--------------------------------------------------------------------------
 */
 
+// Student onboarding routes (accessible before completion)
 Route::middleware(['auth', 'role:student'])->prefix('student')->name('student.')->group(function () {
+Route::get('/onboarding', [\App\Http\Controllers\StudentOnboardingController::class, 'show'])->name('onboarding');
+Route::post('/onboarding/step1', [\App\Http\Controllers\StudentOnboardingController::class, 'saveStep1'])->name('onboarding.step1');
+Route::post('/onboarding/step2', [\App\Http\Controllers\StudentOnboardingController::class, 'saveStep2'])->name('onboarding.step2');
+});
+
+// Student app routes (require onboarding completed)
+Route::middleware(['auth', 'role:student','student.onboarded'])->prefix('student')->name('student.')->group(function () {
     Route::get('/dashboard', [StudentController::class, 'dashboard'])->name('dashboard');
-    Route::get('/find-tutor', [StudentController::class, 'findTutor'])->name('find-tutor');
     Route::get('/tutor/{id}', [StudentController::class, 'tutorProfile'])->name('tutor.profile');
     Route::get('/bookings', [StudentController::class, 'bookings'])->name('bookings');
     Route::get('/wishlist', [StudentController::class, 'wishlist'])->name('wishlist');
     Route::get('/wallet', [StudentController::class, 'wallet'])->name('wallet');
     Route::get('/notifications', [StudentController::class, 'notifications'])->name('notifications');
-    Route::get('/profile', [StudentController::class, 'profile'])->name('profile');
+    Route::get('/notifications/json', [StudentController::class, 'notificationsJson'])->name('notifications.json');
+    Route::post('/settings/picture', [StudentController::class, 'updatePicture'])->name('settings.picture');
     Route::post('/profile/update', [StudentController::class, 'updateProfile'])->name('profile.update');
     Route::get('/settings', [StudentController::class, 'settings'])->name('settings');
     Route::post('/settings/password', [StudentController::class, 'updatePassword'])->name('settings.password');
@@ -112,6 +126,10 @@ Route::middleware(['auth','role:parent','parent.onboarded','parent.active_child'
     Route::get('/', [\App\Http\Controllers\ParentDashboardController::class, 'dashboard'])->name('dashboard');
     Route::get('/dashboard', [\App\Http\Controllers\ParentDashboardController::class, 'dashboard'])->name('dashboard.alt');
 
+    // Wishlist
+    Route::get('/wishlist', [\App\Http\Controllers\ParentDashboardController::class, 'wishlist'])->name('wishlist');
+    Route::post('/tutor/{id}/toggle-like', [\App\Http\Controllers\ParentDashboardController::class, 'toggleLike'])->name('tutor.toggle-like');
+
     // Booking (parent-specific aliases for clarity; also available via public booking.create)
     Route::get('/booking/create/{tutorId}', [\App\Http\Controllers\BookingController::class, 'create'])->name('booking.create');
     Route::post('/booking', [\App\Http\Controllers\BookingController::class, 'store'])->name('booking.store');
@@ -122,6 +140,9 @@ Route::middleware(['auth','role:parent','parent.onboarded','parent.active_child'
     Route::post('/learners/{child}', [\App\Http\Controllers\ParentLearnerController::class, 'update'])->name('learners.update');
     Route::delete('/learners/{child}', [\App\Http\Controllers\ParentLearnerController::class, 'destroy'])->name('learners.delete');
     Route::post('/child/switch', [\App\Http\Controllers\ParentLearnerController::class, 'switch'])->name('child.switch');
+
+    // Wallet
+    Route::get('/wallet', [\App\Http\Controllers\ParentDashboardController::class, 'wallet'])->name('wallet');
 
     // Consultation (view/manage)
     Route::get('/consultation', [\App\Http\Controllers\ParentOnboardingController::class, 'consultationPrompt'])->name('consultation');
@@ -203,6 +224,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Student Management
     Route::get('/students', [AdminController::class, 'students'])->name('students');
     Route::post('/students/{id}/adjust-wallet', [AdminController::class, 'adjustWallet'])->name('students.adjust-wallet');
+
+    // Parent Management
+    Route::get('/parents', [AdminController::class, 'parents'])->name('parents');
+    Route::get('/parents/{id}', [AdminController::class, 'parentShow'])->name('parents.show');
     
     // Bookings
     Route::get('/bookings', [AdminController::class, 'bookings'])->name('bookings');
@@ -211,6 +236,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/payouts', [AdminController::class, 'payouts'])->name('payouts');
     Route::post('/payouts/approve/{id}', [AdminController::class, 'approvePayout'])->name('payouts.approve');
     Route::post('/payouts/reject/{id}', [AdminController::class, 'rejectPayout'])->name('payouts.reject');
+
+    // Consultation Requests
+    Route::get('/consultations', [AdminController::class, 'consultations'])->name('consultations');
+    Route::post('/consultations/{id}/status', [AdminController::class, 'updateConsultationStatus'])->name('consultations.status');
     
     // Settings
     Route::get('/settings', [AdminController::class, 'settings'])->name('settings');

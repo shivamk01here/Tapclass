@@ -120,13 +120,34 @@
 
         {{-- SAVED TUTORS --}}
         <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-lg shadow-gray-900/5 p-6">
-          <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-2">
-            Saved Tutors
-          </h2>
-          <div class="py-10 text-center text-gray-500 dark:text-gray-400">
-            <span class="material-symbols-outlined text-4xl mb-2">bookmark</span>
-            <p class="text-sm">Your saved tutors will appear here. Coming soon!</p>
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="text-lg font-bold text-gray-900 dark:text-white">Saved Tutors</h2>
+            <a href="{{ route('parent.wishlist') }}" class="text-sm text-[#0071b2] font-semibold hover:underline">View all</a>
           </div>
+          @if(($savedTutors ?? collect())->count() > 0)
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              @foreach($savedTutors as $t)
+                <div class="p-3 rounded-lg border dark:border-gray-700 flex items-center gap-3">
+                  @if($t->user->profile_picture)
+                    <img src="{{ asset('storage/' . $t->user->profile_picture) }}" class="w-10 h-10 rounded-full object-cover"/>
+                  @else
+                    <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">{{ substr($t->user->name,0,1) }}</div>
+                  @endif
+                  <div class="flex-1">
+                    <div class="font-semibold text-sm text-gray-900 dark:text-white">{{ $t->user->name }}</div>
+                    <div class="text-xs text-gray-500">{{ $t->city ?? '—' }}</div>
+                  </div>
+                  <a href="{{ route('tutors.profile', $t->user_id) }}" class="text-xs px-3 py-1.5 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">Profile</a>
+                </div>
+              @endforeach
+            </div>
+          @else
+            <div class="py-10 text-center text-gray-500 dark:text-gray-400">
+              <span class="material-symbols-outlined text-4xl mb-2">bookmark</span>
+              <p class="text-sm">No saved tutors yet.</p>
+              <a href="{{ route('tutors.search') }}" class="inline-block mt-3 text-sm text-[#0071b2] font-semibold hover:underline">Find Tutors</a>
+            </div>
+          @endif
         </div>
 
         {{-- LEARNING GOALS --}}
@@ -154,9 +175,14 @@
               <div class="text-3xl font-black text-gray-900 dark:text-white mt-2">
                 ₹{{ number_format(auth()->user()->wallet->balance, 2) }}
               </div>
-              <a href="{{ route('student.wallet') }}" class="inline-block mt-4 px-4 py-2 bg-gradient-to-r from-[#0071b2] to-[#00639c] text-white text-xs font-semibold rounded-lg hover:shadow-lg hover:shadow-[#0071b2]/25 hover:-translate-y-0.5 transition-all duration-300">
-                Add Funds
-              </a>
+              <div class="mt-4 flex items-center gap-2">
+                <button type="button" onclick="showDevToast()" class="px-4 py-2 bg-gradient-to-r from-[#0071b2] to-[#00639c] text-white text-xs font-semibold rounded-lg hover:shadow-lg hover:shadow-[#0071b2]/25 hover:-translate-y-0.5 transition-all duration-300">
+                  Add Funds
+                </button>
+                <a href="{{ route('parent.wallet') }}" class="px-4 py-2 text-xs font-semibold border border-gray-300 rounded-lg hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800">
+                  View Details
+                </a>
+              </div>
             </div>
             <div class="flex-shrink-0">
               <img src="{{ asset('images/onboard/wallet.svg') }}" alt="wallet" class="w-24 h-24">

@@ -69,6 +69,15 @@
                     <span class="font-semibold text-sm lg:text-base">₹{{ number_format(auth()->user()->wallet->balance ?? 0, 0) }}</span>
                 </a>
 
+                <!-- Notifications Bell -->
+                @php $unread = \App\Models\Notification::where('user_id', auth()->id())->where('is_read', false)->count(); @endphp
+                <button type="button" onclick="openNotifyDrawer()" class="relative p-2 rounded-lg hover:bg-gray-100">
+                    <span class="material-symbols-outlined">notifications</span>
+                    @if($unread > 0)
+                        <span class="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center">{{ $unread }}</span>
+                    @endif
+                </button>
+
                 <!-- Profile Dropdown -->
                 <div class="relative group">
                     @if(auth()->user()->profile_picture)
@@ -108,7 +117,52 @@
     </main>
 </div>
 
+<!-- Notifications Drawer -->
+<div id="notify-overlay" class="fixed inset-0 bg-black/40 z-50 hidden" onclick="closeNotifyDrawer()"></div>
+<div id="notify-drawer" class="fixed inset-y-0 left-0 w-80 bg-white z-50 shadow-xl -translate-x-full transition-transform duration-300 flex flex-col">
+    <div class="px-4 py-3 border-b flex items-center justify-between">
+        <h3 class="font-bold">Notifications</h3>
+        <button onclick="closeNotifyDrawer()" class="p-1 rounded hover:bg-gray-100"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div id="notify-list" class="flex-1 overflow-y-auto p-2"></div>
+    <div class="p-3 border-t text-sm"><a class="text-primary font-semibold" href="{{ route('student.notifications') }}">View all</a></div>
+</div>
+
 @stack('scripts')
+
+<script>
+async function openNotifyDrawer(){
+  const ov = document.getElementById('notify-overlay');
+  const dr = document.getElementById('notify-drawer');
+  ov.classList.remove('hidden');
+  dr.classList.remove('-translate-x-full');
+  try {
+    const res = await fetch('{{ route('student.notifications.json') }}');
+    const data = await res.json();
+    const list = document.getElementById('notify-list');
+    if(!data.notifications || data.notifications.length === 0){
+      list.innerHTML = '<div class="p-4 text-sm text-gray-500">No notifications</div>';
+      return;
+    }
+    list.innerHTML = data.notifications.map(n => `
+      <div class="p-3 border-b ${n.is_read ? '' : 'bg-blue-50'}">
+        <div class="font-semibold text-sm">${escapeHtml(n.title || 'Notification')}</div>
+        <div class="text-xs text-gray-600 mt-0.5">${escapeHtml(n.message || '')}</div>
+        <div class="text-[11px] text-gray-400 mt-1">${new Date(n.created_at).toLocaleString()}</div>
+      </div>`).join('');
+  } catch (e) {
+    document.getElementById('notify-list').innerHTML = '<div class="p-4 text-sm text-red-600">Failed to load</div>';
+  }
+}
+function closeNotifyDrawer(){
+  document.getElementById('notify-overlay').classList.add('hidden');
+  document.getElementById('notify-drawer').classList.add('-translate-x-full');
+}
+function escapeHtml(s){
+  if(!s) return '';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+</script>
 
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </body>

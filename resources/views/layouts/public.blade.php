@@ -3,202 +3,120 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>@yield('title', 'Htc - Find Your Perfect Tutor')</title>
+    <title>@yield('title', 'htc - Find Your Perfect Tutor')</title>
+
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
     <script>
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            colors: {
-              "primary": "#0071b3",
-              "secondary": "#FFA500",
-              "background-light": "#f6f7f8",
-              "background-dark": "#101c22",
-            },
-            fontFamily: { "display": ["Manrope", "sans-serif"] },
-            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
-          },
-        },
-      }
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        'black': '#10181B',
+                        'primary': '#006cab',
+                        'accent-yellow': '#FFBD59',
+                        'text-subtle': '#667085',
+                        'page-bg': '#fffcf0',
+                        'footer-bg': '#334457',
+                        'subscribe-bg': '#D1E3E6',
+                        'steps-bg': '#b6e1e3',
+                    },
+                    fontFamily: {
+                        'sans': ['Poppins', 'sans-serif'],
+                        'heading': ['Anton', 'sans-serif']
+                    },
+                    boxShadow: {
+                        'header-chunky': '0 8px 0 0 #10181B',
+                        'button-chunky': '0 4px 0 0 #10181B',
+                        'button-chunky-hover': '0 2px 0 0 #10181B',
+                        'button-chunky-active': '0 0 0 0 #10181B',
+                    },
+                    spacing: { '0.5': '2px', '1': '4px', },
+                    fontSize: {
+                        'xxs': '0.825rem',
+                        'hero-lg': '4.2rem',  // For main homepage
+                        'hero-md': '2.5rem',  // <-- MADE SMALLER (was 3rem)
+                        'h2': '2rem',         // <-- MADE SMALLER (was 2.25rem)
+                        'h3': '1.5rem',
+                    }
+                }
+            }
+        }
     </script>
-    <!-- Alpine.js + plugins via CDN for collapses and intersection animations -->
+
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/intersect@3.x.x/dist/cdn.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <!-- Flowbite for accessible accordion UI (no custom JS) -->
     <script defer src="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.js"></script>
-    <style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-    </style>
+
     @stack('styles')
 </head>
-<body class="bg-background-light dark:bg-background-dark font-display text-gray-900 dark:text-gray-100">
-    
-    <nav class="bg-white dark:bg-background-dark border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                
-                <a href="{{ route('home') }}" class="flex-shrink-0 flex items-center gap-2 text-primary">
-                    <svg class="w-8 h-8" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M4 4H17.3334V17.3334H30.6666V30.6666H44V44H4V4Z" fill="currentColor"></path>
-                    </svg>
-                    <span class="text-xl font-bold">Htc</span>
+<body class="font-sans text-black bg-page-bg">
+
+    <div x-data="{ mobileMenuOpen: false }" class="sticky top-6 z-50">
+        <div class="max-w-6xl mx-auto px-4"> 
+            <nav class="flex items-center justify-between bg-white border-2 border-black rounded-xl py-2.5 px-6 shadow-header-chunky">
+                <a href="{{ route('home') }}" class="flex-shrink-0 flex items-center font-bold text-xl text-black group">
+                    <i class="bi bi-mortarboard-fill text-accent-yellow text-2xl mr-2 transition-transform duration-300 group-hover:rotate-15"></i>
+                    htc<span class="text-primary"></span>
                 </a>
-
-                <div class="hidden md:flex items-center gap-6">
-                    <a href="{{ route('tutors.search') }}" class="text-gray-700 dark:text-gray-300 hover:text-primary font-medium transition-colors">Find Tutors</a>
-                    <a href="{{ route('about') }}" class="text-gray-700 dark:text-gray-300 hover:text-primary font-medium transition-colors">About Us</a>
-                    <a href="{{ route('contact') }}" class="text-gray-700 dark:text-gray-300 hover:text-primary font-medium transition-colors">Contact</a>
-                </div>
-
-                <div class="hidden md:flex items-center gap-4">
-                    @auth
-                        <a href="{{ auth()->user()->isStudent() ? route('student.dashboard') : (auth()->user()->isTutor() ? route('tutor.dashboard') : (auth()->user()->isParent() ? route('parent.dashboard') : route('admin.dashboard'))) }}" class="px-5 py-2 bg-primary text-white rounded-lg font-bold hover:bg-primary/90 transition-colors">
-                            Dashboard
-                        </a>
-                        <form method="POST" action="{{ route('logout') }}" class="inline">
-                            @csrf
-                            <button type="submit" class="px-4 py-2 text-gray-700 dark:text-gray-300 font-medium hover:text-primary transition-colors">Logout</button>
-                        </form>
-                    @else
-                        <a href="{{ route('login') }}" class="px-5 py-2 text-gray-700 dark:text-gray-300 font-medium hover:text-primary transition-colors">Log in</a>
-                        <a href="{{ route('register') }}" class="px-5 py-2 bg-primary text-white rounded-lg font-bold hover:bg-primary/90 transition-colors">Sign Up</a>
-                    @endauth
-                    
-                    <div class="w-10 h-10 rounded-full bg-secondary flex items-center justify-center">
-                        @if(auth()->check() && auth()->user()->profile_picture)
-                            <img src="{{ asset('storage/' . auth()->user()->profile_picture) }}" class="w-10 h-10 rounded-full object-cover" alt="Profile" />
-                        @else
-                            <span class="material-symbols-outlined text-white">person</span>
-                        @endif
-                    </div>
-                </div>
-
-                <button id="mobile-menu-btn" class="md:hidden text-gray-700 dark:text-gray-300 hover:text-primary">
-                    <span class="material-symbols-outlined text-3xl">menu</span>
+                <button @click="mobileMenuOpen = !mobileMenuOpen" class="lg:hidden p-2 rounded-lg hover:bg-gray-100">
+                    <i class="bi bi-list text-3xl"></i>
                 </button>
-            </div>
-        </div>
-
-        <div id="mobile-menu" class="hidden md:hidden border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-background-dark">
-            <div class="px-4 py-4 space-y-3">
-                <a href="{{ route('tutors.search') }}" class="block text-gray-700 dark:text-gray-300 hover:text-primary font-medium transition">
-                    Find Tutors
-                </a>
-                <a href="{{ route('about') }}" class="block text-gray-700 dark:text-gray-300 hover:text-primary font-medium transition">
-                    About Us
-                </a>
-                <a href="{{ route('contact') }}" class="block text-gray-700 dark:text-gray-300 hover:text-primary font-medium transition">
-                    Contact
-                </a>
-                
-                <div class="border-t border-gray-200 dark:border-gray-700 pt-4 space-y-3">
+                <ul class="hidden lg:flex items-center mx-auto space-x-1">
+                    <li><a href="{{ route('tutors.search') }}" class="block font-semibold uppercase text-xxs py-1.5 px-3 hover:text-primary transition-colors">Find Tutors</a></li>
+                    <li><a href="{{ route('about') }}" class="block font-semibold uppercase text-xxs py-1.5 px-3 hover:text-primary transition-colors">About Us</a></li>
+                    <li><a href="{{ route('contact') }}" class="block font-semibold uppercase text-xxs py-1.5 px-3 hover:text-primary transition-colors">Contact</a></li>
+                </ul>
+                <div class="hidden lg:flex items-center gap-3">
                     @auth
-                        @if(auth()->user()->isStudent())
-                            <a href="{{ route('student.dashboard') }}" class="block text-gray-700 dark:text-gray-300 hover:text-primary font-medium transition">
-                                Dashboard
-                            </a>
-                        @elseif(auth()->user()->isTutor())
-                            <a href="{{ route('tutor.dashboard') }}" class="block text-gray-700 dark:text-gray-300 hover:text-primary font-medium transition">
-                                Dashboard
-                            </a>
-                        @elseif(auth()->user()->isTutor())
-                            <a href="{{ route('tutor.dashboard') }}" class="block text-gray-700 dark:text-gray-300 hover:text-primary font-medium transition">
-                                Dashboard
-                            </a>
-                        @elseif(auth()->user()->isParent())
-                            <a href="{{ route('parent.dashboard') }}" class="block text-gray-700 dark:text-gray-300 hover:text-primary font-medium transition">
-                                Dashboard
-                            </a>
-                        @elseif(auth()->user()->isAdmin())
-                            <a href="{{ route('admin.dashboard') }}" class="block text-gray-700 dark:text-gray-300 hover:text-primary font-medium transition">
-                                Admin
-                            </a>
-                        @endif
-                        
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit" class="block w-full text-left text-gray-700 dark:text-gray-300 hover:text-primary font-medium transition">
-                                Logout
-                            </button>
-                        </form>
-                    @else
-                        <a href="{{ route('login') }}" class="block text-gray-700 dark:text-gray-300 hover:text-primary font-medium transition">
-                            Login
+                        @else
+                        <a href="{{ route('login') }}" class="font-semibold uppercase text-xxs py-1.5 px-3 hover:text-primary">
+                            Log in
                         </a>
-                        <a href="{{ route('register.student') }}" class="block px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 font-medium text-center transition">
-                            Register
+                        <a href="{{ route('register') }}" 
+                           class="bg-accent-yellow border-2 border-black rounded-lg text-black font-bold uppercase text-xxs py-2 px-5 shadow-button-chunky ...">
+                            Sign Up
                         </a>
                     @endauth
                 </div>
-            </div>
-        </div>
-    </nav>
+            </nav>
 
-    <main>
+            <div x-show="mobileMenuOpen" x-transition @click.away="mobileMenuOpen = false" class="lg:hidden bg-white border-2 border-black rounded-xl shadow-header-chunky p-6 mt-3 space-y-4">
+                </div>
+        </div>
+    </div>
+
+    <main class="max-w-6xl mx-auto px-4">
         @yield('content')
     </main>
 
-    <footer class="bg-gray-900 text-white mt-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <div>
-                    <div class="flex items-center gap-2 mb-4">
-                        <div class="w-8 h-8 text-primary">
-                            <svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M4 4H17.3334V17.3334H30.6666V30.6666H44V44H4V4Z" fill="currentColor"></path>
-                            </svg>
-                        </div>
-                        <span class="text-2xl font-bold">Htc</span>
-                    </div>
-                    <p class="text-gray-400 text-sm">
+   
+    <footer class="bg-footer-bg text-gray-300 pt-16">
+        <div class="max-w-6xl mx-auto px-4"> 
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8">
+                <div class="md:col-span-3 lg:col-span-2">
+                    <a href="{{ route('home') }}" class="flex items-center font-bold text-xl text-white group">
+                        <i class="bi bi-mortarboard-fill text-accent-yellow text-2xl mr-2"></i>
+                        htc
+                    </a>
+                    <p class="my-4 max-w-xs text-sm leading-relaxed">
                         Connecting students with qualified tutors for personalized learning experiences.
                     </p>
-                </div>
-
-                <div>
-                    <h3 class="text-lg font-bold mb-4">Quick Links</h3>
-                    <ul class="space-y-2 text-gray-400">
-                        <li><a href="{{ route('tutors.search') }}" class="hover:text-white transition">Find Tutors</a></li>
-                        <li><a href="{{ route('register.student') }}" class="hover:text-white transition">Become a Student</a></li>
-                        <li><a href="{{ route('register.tutor') }}" class="hover:text-white transition">Become a Tutor</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h3 class="text-lg font-bold mb-4">Company</h3>
-                    <ul class="space-y-2 text-gray-400">
-                        <li><a href="{{ route('about') }}" class="hover:text-white transition">About Us</a></li>
-                        <li><a href="{{ route('contact') }}" class="hover:text-white transition">Contact</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h3 class="text-lg font-bold mb-4">Legal</h3>
-                    <ul class="space-y-2 text-gray-400">
-                        <li><a href="{{ route('privacy') }}" class="hover:text-white transition">Privacy Policy</a></li>
-                        <li><a href="{{ route('terms') }}" class="hover:text-white transition">Terms & Conditions</a></li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
-                <p>&copy; {{ date('Y') }} Htc. All rights reserved.</p>
+                    </div>
+                </div> 
+            <div class="mt-12 pt-6 border-t border-gray-200/20">
+                <div class="flex flex-col sm:flex-row justify-between items-center">
+                    <p class="text-sm text-gray-400">&copy; {{ date('Y') }} htc. All rights reserved.</p>
+                    </div>
             </div>
         </div>
     </footer>
-
-    <script>
-        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
-            const menu = document.getElementById('mobile-menu');
-            menu.classList.toggle('hidden');
-        });
-    </script>
 
     @stack('scripts')
 </body>

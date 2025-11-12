@@ -3,139 +3,165 @@
 @section('title', 'Settings - Htc')
 
 @section('content')
-<div class="max-w-4xl mx-auto px-8 py-8">
-        @if(session('success'))
-        <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700">
-            {{ session('success') }}
-        </div>
-        @endif
+<div class="max-w-5xl mx-auto px-6 py-8">
+    @if(session('success'))
+      <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700 flex items-center gap-2">
+        <span class="material-symbols-outlined">check_circle</span>
+        <span>{{ session('success') }}</span>
+      </div>
+    @endif
 
-        <!-- Tabs -->
-        <div class="bg-white rounded-lg border mb-6">
-            <div class="flex border-b">
-                <button onclick="showTab('profile')" id="profileTab" class="px-6 py-4 font-semibold border-b-2 border-primary text-primary">
-                    Profile & Picture
-                </button>
-                <button onclick="showTab('password')" id="passwordTab" class="px-6 py-4 font-semibold text-gray-500 hover:text-gray-700">
-                    Change Password
-                </button>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Left: Identity & Photo -->
+      <div class="lg:col-span-1 space-y-6">
+        <div class="bg-white rounded-2xl border p-6">
+          <div class="flex items-center gap-4">
+            @if($tutor->profile_picture)
+              <img src="{{ asset('storage/' . ltrim($tutor->profile_picture,'/')) }}" class="w-20 h-20 rounded-full object-cover border-4 border-primary/20" />
+            @else
+              <div class="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center border-4 border-primary/20">
+                <span class="text-primary font-black text-2xl">{{ substr($tutor->name,0,1) }}</span>
+              </div>
+            @endif
+            <div>
+              <div class="text-xl font-bold">{{ $tutor->name }}</div>
+              <div class="text-xs text-gray-500">Email: {{ $tutor->email }} • Phone: {{ $tutor->phone ?? '—' }}</div>
             </div>
+          </div>
+          <div class="mt-4">
+            <form method="POST" action="{{ route('tutor.settings.picture') }}" enctype="multipart/form-data" class="inline-block">
+              @csrf
+              <input type="file" id="pictureInput" name="profile_picture" accept="image/*" class="hidden" onchange="this.form.submit()"/>
+              <label for="pictureInput" class="px-4 py-2 bg-primary text-white rounded-lg cursor-pointer hover:bg-primary/90 inline-flex items-center gap-2">
+                <span class="material-symbols-outlined">photo_camera</span> Change Photo
+              </label>
+            </form>
+            <p class="text-xs text-gray-500 mt-2">Name, email, phone and ratings are not editable.</p>
+          </div>
+        </div>
 
-            <!-- Profile Tab -->
-            <div id="profileContent" class="p-6">
-                <h3 class="text-lg font-bold mb-4">Profile Picture</h3>
-                <div class="flex items-center gap-6 mb-6">
-                    @if($tutor->profile_picture)
-                        <img src="{{ asset('storage/' . $tutor->profile_picture) }}" class="w-24 h-24 rounded-full object-cover border-4 border-primary/20" alt="Profile"/>
-                    @else
-                        <div class="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center border-4 border-primary/20">
-                            <span class="text-primary font-black text-4xl">{{ substr($tutor->name, 0, 1) }}</span>
-                        </div>
-                    @endif
-                    <div>
-                        <form method="POST" action="{{ route('tutor.settings.picture') }}" enctype="multipart/form-data">
-                            @csrf
-                            <input type="file" name="profile_picture" accept="image/*" class="hidden" id="pictureInput" onchange="this.form.submit()"/>
-                            <label for="pictureInput" class="px-4 py-2 bg-primary text-white rounded-lg cursor-pointer hover:bg-primary/90 inline-block">
-                                Upload Photo
-                            </label>
-                            <p class="text-sm text-gray-500 mt-2">JPG, PNG Max 2MB</p>
-                        </form>
-                        @error('profile_picture')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
+        <div class="bg-white rounded-2xl border p-6">
+          <h3 class="text-lg font-bold mb-3">Security</h3>
+          <form method="POST" action="{{ route('tutor.settings.password') }}" class="space-y-3">
+            @csrf
+            <div>
+              <label class="text-sm font-semibold">Current Password</label>
+              <input type="password" name="current_password" class="w-full px-3 py-2 border rounded-lg" required>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="text-sm font-semibold">New Password</label>
+                <input type="password" name="password" class="w-full px-3 py-2 border rounded-lg" required>
+              </div>
+              <div>
+                <label class="text-sm font-semibold">Confirm Password</label>
+                <input type="password" name="password_confirmation" class="w-full px-3 py-2 border rounded-lg" required>
+              </div>
+            </div>
+            <button class="px-4 py-2 bg-gray-900 text-white rounded-lg">Update Password</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Right: Editable Profile -->
+      <div class="lg:col-span-2">
+        <form method="POST" action="{{ route('tutor.profile.update') }}" class="space-y-6">
+          @csrf
+
+          <div class="bg-white rounded-2xl border p-6">
+            <h3 class="text-lg font-bold mb-4">Basics</h3>
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div class="sm:col-span-2">
+                <label class="text-sm font-semibold">Bio</label>
+                <textarea name="bio" rows="4" class="w-full px-3 py-2 border rounded-lg" placeholder="Tell students about your teaching style...">{{ old('bio', $profile->bio) }}</textarea>
+              </div>
+              <div>
+                <label class="text-sm font-semibold">Qualification</label>
+                <input type="text" name="qualification" value="{{ old('qualification',$profile->qualification) }}" class="w-full px-3 py-2 border rounded-lg">
+              </div>
+              <div>
+                <label class="text-sm font-semibold">Gender</label>
+                <select name="gender" class="w-full px-3 py-2 border rounded-lg">
+                  <option value="">Prefer not to say</option>
+                  <option value="male" @selected($profile->gender==='male')>Male</option>
+                  <option value="female" @selected($profile->gender==='female')>Female</option>
+                  <option value="other" @selected($profile->gender==='other')>Other</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-sm font-semibold">Experience (years)</label>
+                <input type="number" min="0" max="60" name="experience_years" value="{{ old('experience_years',$profile->experience_years) }}" class="w-full px-3 py-2 border rounded-lg">
+              </div>
+              <div class="sm:col-span-2">
+                <label class="text-sm font-semibold">Languages</label>
+                <select multiple name="languages[]" class="w-full px-3 py-2 border rounded-lg">
+                  @foreach($languages as $lang)
+                    <option value="{{ $lang->id }}" @selected(in_array($lang->id, $selectedLanguageIds))>{{ $lang->name }}</option>
+                  @endforeach
+                </select>
+                <p class="text-xs text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border p-6">
+            <h3 class="text-lg font-bold mb-4">Teaching & Rates</h3>
+            <div class="grid sm:grid-cols-3 gap-4">
+              <div>
+                <label class="text-sm font-semibold">Teaching Mode</label>
+                <select name="teaching_mode" class="w-full px-3 py-2 border rounded-lg">
+                  <option value="online" @selected($profile->teaching_mode==='online')>Online</option>
+                  <option value="offline" @selected($profile->teaching_mode==='offline')>Offline</option>
+                  <option value="both" @selected($profile->teaching_mode==='both')>Both</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-sm font-semibold">Consultation Fee (₹/hr)</label>
+                <input type="number" step="1" name="hourly_rate" value="{{ old('hourly_rate',$profile->hourly_rate) }}" class="w-full px-3 py-2 border rounded-lg">
+              </div>
+              <div>
+                <label class="text-sm font-semibold">Travel Radius (km)</label>
+                <input type="number" step="1" min="0" max="50" name="travel_radius_km" value="{{ old('travel_radius_km',$profile->travel_radius_km) }}" class="w-full px-3 py-2 border rounded-lg">
+              </div>
+              <div class="sm:col-span-3">
+                <label class="text-sm font-semibold">Grades/Levels</label>
+                <div class="flex flex-wrap gap-2 mt-1">
+                  @foreach($gradeBands as $key=>$label)
+                    <label class="inline-flex items-center gap-1 text-sm bg-gray-50 border rounded-lg px-2 py-1">
+                      <input type="checkbox" name="grade_levels[]" value="{{ $key }}" class="accent-primary" @checked(is_array($profile->grade_levels) && in_array($key,$profile->grade_levels))>
+                      <span>{{ $label }}</span>
+                    </label>
+                  @endforeach
                 </div>
-
-                <h3 class="text-lg font-bold mb-4">Personal Information</h3>
-                <form method="POST" action="{{ route('tutor.profile.update') }}">
-                    @csrf
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block font-semibold mb-2">Full Name</label>
-                            <input type="text" name="name" value="{{ old('name', $tutor->name) }}" class="w-full px-4 py-2 border rounded-lg" required/>
-                        </div>
-                        <div>
-                            <label class="block font-semibold mb-2">Email</label>
-                            <input type="email" value="{{ $tutor->email }}" class="w-full px-4 py-2 border rounded-lg bg-gray-50" disabled/>
-                            <p class="text-sm text-gray-500 mt-1">Email cannot be changed</p>
-                        </div>
-                        <div>
-                            <label class="block font-semibold mb-2">Phone</label>
-                            <input type="text" name="phone" value="{{ old('phone', $tutor->phone) }}" class="w-full px-4 py-2 border rounded-lg"/>
-                        </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block font-semibold mb-2">Grade Level</label>
-                                <input type="text" name="grade" value="{{ old('grade', $profile->grade ?? '') }}" class="w-full px-4 py-2 border rounded-lg" placeholder="e.g., Class 10"/>
-                            </div>
-                            <div>
-                                <label class="block font-semibold mb-2">Location</label>
-                                <input type="text" name="location" value="{{ old('location', $profile->location ?? '') }}" class="w-full px-4 py-2 border rounded-lg"/>
-                            </div>
-                        </div>
-                        <button type="submit" class="px-6 py-3 bg-primary text-white rounded-lg font-bold hover:bg-primary/90">
-                            Save Changes
-                        </button>
-                    </div>
-                </form>
+              </div>
             </div>
+          </div>
 
-            <!-- Password Tab -->
-            <div id="passwordContent" class="p-6 hidden">
-                <h3 class="text-lg font-bold mb-4">Change Password</h3>
-                <form method="POST" action="{{ route('tutor.settings.password') }}">
-                    @csrf
-                    <div class="space-y-4 max-w-md">
-                        <div>
-                            <label class="block font-semibold mb-2">Current Password</label>
-                            <input type="password" name="current_password" class="w-full px-4 py-2 border rounded-lg" required/>
-                            @error('current_password')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        <div>
-                            <label class="block font-semibold mb-2">New Password</label>
-                            <input type="password" name="new_password" class="w-full px-4 py-2 border rounded-lg" required/>
-                            <p class="text-sm text-gray-500 mt-1">Minimum 8 characters</p>
-                        </div>
-                        <div>
-                            <label class="block font-semibold mb-2">Confirm New Password</label>
-                            <input type="password" name="new_password_confirmation" class="w-full px-4 py-2 border rounded-lg" required/>
-                        </div>
-                        <button type="submit" class="px-6 py-3 bg-primary text-white rounded-lg font-bold hover:bg-primary/90">
-                            Update Password
-                        </button>
-                    </div>
-                </form>
+          <div class="bg-white rounded-2xl border p-6">
+            <h3 class="text-lg font-bold mb-4">Location</h3>
+            <div class="grid sm:grid-cols-3 gap-4">
+              <div class="sm:col-span-2">
+                <label class="text-sm font-semibold">City</label>
+                <select name="city_id" class="w-full px-3 py-2 border rounded-lg">
+                  <option value="">Select City</option>
+                  @foreach($cities as $c)
+                    <option value="{{ $c->id }}" @selected($profile->city === $c->name)>{{ $c->name }}</option>
+                  @endforeach
+                </select>
+              </div>
+              <div>
+                <label class="text-sm font-semibold">PIN Code</label>
+                <input type="text" name="pin_code" value="{{ old('pin_code',$profile->pin_code) }}" class="w-full px-3 py-2 border rounded-lg">
+              </div>
             </div>
-        </div>
+          </div>
+
+          <div class="flex justify-end">
+            <button class="px-6 py-2.5 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
 </div>
 @endsection
 
-@push('scripts')
-<script>
-function showTab(tab) {
-    // Hide all
-    document.getElementById('profileContent').classList.add('hidden');
-    document.getElementById('passwordContent').classList.add('hidden');
-    
-    // Remove active from all tabs
-    document.getElementById('profileTab').classList.remove('border-primary', 'text-primary');
-    document.getElementById('passwordTab').classList.remove('border-primary', 'text-primary');
-    document.getElementById('profileTab').classList.add('text-gray-500');
-    document.getElementById('passwordTab').classList.add('text-gray-500');
-    
-    // Show selected
-    if (tab === 'profile') {
-        document.getElementById('profileContent').classList.remove('hidden');
-        document.getElementById('profileTab').classList.add('border-primary', 'text-primary');
-        document.getElementById('profileTab').classList.remove('text-gray-500');
-    } else {
-        document.getElementById('passwordContent').classList.remove('hidden');
-        document.getElementById('passwordTab').classList.add('border-primary', 'text-primary');
-        document.getElementById('passwordTab').classList.remove('text-gray-500');
-    }
-}
-</script>
-@endpush

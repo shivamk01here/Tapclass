@@ -1,73 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>{{ $tutor->user->name }} - Tutor Profile - Htc</title>
-  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: { "primary": "#13a4ec", "secondary": "#FFA500" },
-          fontFamily: { "display": ["Manrope", "sans-serif"] }
-        }
-      }
-    }
-  </script>
-</head>
+@extends('layouts.public')
 
-<body class="bg-gray-50 font-display">
+ <title>{{ $tutor->user->name }} - Tutor Profile - Htc</title>
 
-<!-- Header -->
-<header class="bg-white border-b border-gray-200 sticky top-0 z-50">
-  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-    <a href="{{ route('home') }}" class="flex items-center gap-2 text-primary">
-      <svg class="w-7 h-7 sm:w-8 sm:h-8" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-        <path d="M4 4H17.3334V17.3334H30.6666V30.6666H44V44H4V4Z" fill="currentColor"></path>
-      </svg>
-      <span class="text-lg sm:text-xl font-bold">Htc</span>
-    </a>
-
-    <button id="menuToggle" class="sm:hidden p-2 rounded-md hover:bg-gray-100">
-      <span class="material-symbols-outlined text-2xl">menu</span>
-    </button>
-
-    <nav id="navMenu" class="hidden sm:flex items-center gap-4">
-      <a href="{{ route('tutors.search') }}" class="text-sm font-medium text-gray-700 hover:text-primary">Tutors</a>
-      <a href="{{ route('home') }}#subjects" class="text-sm font-medium text-gray-700 hover:text-primary">Subjects</a>
-      <a href="{{ route('home') }}#about" class="text-sm font-medium text-gray-700 hover:text-primary">About Us</a>
-      <a href="{{ route('home') }}#pricing" class="text-sm font-medium text-gray-700 hover:text-primary">Pricing</a>
-      @auth
-      <a href="{{ auth()->user()->isStudent() ? route('student.dashboard') : (auth()->user()->isTutor() ? route('tutor.dashboard') : route('admin.dashboard')) }}" class="px-4 py-2 bg-primary text-white rounded-lg font-bold hover:bg-primary/90">
-        Dashboard
-      </a>
-      @else
-      <a href="{{ route('login') }}" class="px-4 py-2 bg-primary text-white rounded-lg font-bold hover:bg-primary/90">Log in</a>
-      <a href="{{ route('register.student') }}" class="px-4 py-2 text-gray-700 font-medium hover:text-primary">Sign Up</a>
-      @endauth
-    </nav>
-  </div>
-
-  <!-- Mobile Nav -->
-  <div id="mobileMenu" class="hidden sm:hidden flex flex-col space-y-2 bg-white border-t border-gray-200 px-4 py-3">
-    <a href="{{ route('tutors.search') }}" class="text-gray-700 hover:text-primary">Tutors</a>
-    <a href="{{ route('home') }}#subjects" class="text-gray-700 hover:text-primary">Subjects</a>
-    <a href="{{ route('home') }}#about" class="text-gray-700 hover:text-primary">About Us</a>
-    <a href="{{ route('home') }}#pricing" class="text-gray-700 hover:text-primary">Pricing</a>
-    @auth
-    <a href="{{ auth()->user()->isStudent() ? route('student.dashboard') : (auth()->user()->isTutor() ? route('tutor.dashboard') : route('admin.dashboard')) }}" class="px-4 py-2 bg-primary text-white rounded-lg font-bold text-center">
-      Dashboard
-    </a>
-    @else
-    <a href="{{ route('login') }}" class="px-4 py-2 bg-primary text-white rounded-lg font-bold text-center">Log in</a>
-    <a href="{{ route('register.student') }}" class="px-4 py-2 text-gray-700 font-medium hover:text-primary text-center">Sign Up</a>
-    @endauth
-  </div>
-</header>
-
+@section('content')
 <main class="max-w-7xl mx-auto px-4 py-6 sm:py-10">
   <!-- Tutor Header -->
   <section class="bg-white rounded-xl border border-gray-200 p-5 sm:p-8 mb-6">
@@ -287,3 +222,4 @@
 
 </body>
 </html>
+@endsection

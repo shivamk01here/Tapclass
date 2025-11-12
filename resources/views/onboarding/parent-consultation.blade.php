@@ -194,21 +194,49 @@
           @endif
 
           @if($existing)
-          <div class="mb-5 p-3 border rounded-lg bg-gray-50 dark:bg-background-dark/50 border-gray-200 dark:border-gray-700 existing-request">
-            <div class="flex items-start gap-2">
-              <span class="material-symbols-outlined text-primary text-lg">info</span>
-              <div>
-                <div class="text-xs font-semibold text-gray-900 dark:text-white mb-1">Your Last Request</div>
-                <div class="text-xs text-gray-600 dark:text-gray-400">
-                  Status: <span class="font-medium">{{ ucfirst($existing->status) }}</span>
-          T         @if($existing->scheduled_at) 
-                  <br/>Scheduled: <span class="font-medium">{{ $existing->scheduled_at }}</span>
-                  @endif
-                </div>
-              </div>
-            </div>
-          </div>
-          @endif
+          <div class="mb-5 p-4 border rounded-xl bg-gray-50 dark:bg-background-dark/50 border-gray-200 dark:border-gray-700 existing-request">
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">support_agent</span>
+                <div class="text-sm font-semibold text-gray-900 dark:text-white">Last Consultation</div>
+              </div>
+              @php
+                $status = strtolower($existing->status ?? 'pending');
+                $statusClasses = [
+                  'requested' => 'bg-blue-100 text-blue-800',
+                  'scheduled' => 'bg-amber-100 text-amber-800',
+                  'completed' => 'bg-green-100 text-green-800',
+                  'cancelled' => 'bg-red-100 text-red-800',
+                ];
+                $pill = $statusClasses[$status] ?? 'bg-gray-100 text-gray-800';
+              @endphp
+              <span class="px-2.5 py-1 rounded-full text-xs font-semibold {{ $pill }}">{{ ucfirst($status) }}</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+              <div class="flex items-start gap-2">
+                <span class="material-symbols-outlined text-blue-600">history</span>
+                <div>
+                  <div class="text-gray-500">Requested On</div>
+                  <div class="font-medium text-gray-900 dark:text-gray-100">{{ $existing->created_at->format('M d, Y h:i A') }} <span class="text-gray-500">({{ $existing->created_at->diffForHumans() }})</span></div>
+                </div>
+              </div>
+              @if($existing->scheduled_at)
+              <div class="flex items-start gap-2">
+                <span class="material-symbols-outlined text-amber-600">schedule</span>
+                <div>
+                  <div class="text-gray-500">Scheduled For</div>
+                  <div class="font-medium text-gray-900 dark:text-gray-100">{{ $existing->scheduled_at->format('M d, Y h:i A') }}</div>
+                </div>
+              </div>
+              @endif
+              <div class="sm:col-span-2">
+                <div class="text-gray-500 mb-1">Notes</div>
+                <div class="text-gray-800 dark:text-gray-200 overflow-hidden">{{ $existing->questions ?? '—' }}</div>
+              </div>
+            </div>
+          </div>
+          @endif
 
           <form method="POST" action="{{ route('onboarding.parent.consultation.store') }}" class="space-y-4 consultation-form">
             @csrf
