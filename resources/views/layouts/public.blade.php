@@ -43,10 +43,10 @@
                     },
                     fontSize: {
                         'xxs': '0.825rem',
-                        'hero-lg': '4.2rem',  // <-- For main homepage hero
-                        'hero-md': '3rem',    // <-- For inner page heroes
-                        'h2': '2.25rem',      // <-- For section titles
-                        'h3': '1.5rem',       // <-- For card titles
+                        'hero-lg': '4.2rem',  
+                        'hero-md': '3rem',   
+                        'h2': '2.25rem',     
+                        'h3': '1.5rem',     
                     }
                 }
             }
@@ -89,7 +89,7 @@
                         </form>
                         <div class="w-10 h-10 rounded-full border-2 border-black bg-gray-200">
                             @if(auth()->check() && auth()->user()->profile_picture)
-@php $pp = auth()->user()->profile_picture; $ppUrl = \Illuminate\Support\Str::startsWith($pp, ['/storage','http']) ? asset(ltrim($pp,'/')) : asset('storage/'.$pp); @endphp
+                                @php $pp = auth()->user()->profile_picture; $ppUrl = \Illuminate\Support\Str::startsWith($pp, ['/storage','http']) ? asset(ltrim($pp,'/')) : asset('storage/'.$pp); @endphp
                                 <img src="{{ $ppUrl }}" class="w-full h-full rounded-full object-cover" alt="Profile" />
                             @else
                                 <span class="flex items-center justify-center h-full text-black/60">

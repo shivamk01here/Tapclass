@@ -31,8 +31,8 @@
                     'steps-bg': '#b6e1e3',
                 },
                 fontFamily: {
-                    'sans': ['Poppins', 'sans-serif'], // Poppins for body
-                    'heading': ['Anton', 'sans-serif']  // Anton for titles
+                    'sans': ['Poppins', 'sans-serif'], 
+                    'heading': ['Anton', 'sans-serif']  
                 },
                 boxShadow: {
                     'header-chunky': '0 8px 0 0 #10181B',
@@ -54,9 +54,7 @@
     </script>
     
     <style>
-        /* Style for the GSAP highlighter (Updated to our accent color) */
         .highlight-word {
-            /* This is our new --accent-yellow color */
             background: linear-gradient(to top, #FFBD59 40%, transparent 40%);
             background-size: 0% 100%;
             background-repeat: no-repeat;
