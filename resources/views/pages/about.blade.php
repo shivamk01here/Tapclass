@@ -112,7 +112,7 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center mb-8">
             <div class="flex items-center justify-center lg:order-first">
-                <img src="{{ asset('images/about/process-book.png') }}" alt="Book a session illustration" class="w-full max-w-md h-auto rounded-lg" onerror="this.style.display='none'">
+                <img src="{{ asset('images\login\tutor.svg') }}" alt="Book a session illustration" class="w-full max-w-md h-auto rounded-lg" onerror="this.style.display='none'">
             </div>
             <div class="flex flex-col gap-4">
                 <span class="text-primary font-bold">Step 2</span>
@@ -128,7 +128,7 @@
                 <p class="text-text-subtle">Dive into personalized lessons designed to meet your needs. Track your progress, review past sessions, and celebrate your achievements, all within htc.</p>
             </div>
             <div class="flex items-center justify-center">
-                <img src="{{ asset('images/about/process-learn.png') }}" alt="Start learning illustration" class="w-full max-w-md h-auto rounded-lg" onerror="this.style.display='none'">
+                <img src="{{ asset('images\Hero\Grades-bro.svg') }}" alt="Start learning illustration" class="w-full max-w-md h-auto rounded-lg" onerror="this.style.display='none'">
             </div>
         </div>
     </section>

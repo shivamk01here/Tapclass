@@ -19,10 +19,10 @@
                 </form>
             </div>
             
-            <div class="hidden md:flex justify-center items-center h-full">
-                <img src="{{ asset('images\Hero\Mailbox-bro.svg') }}" 
-                     alt="mail box" 
-                     class="h-full w-auto object-contain opacity-90">
+            <div class="hidden md:flex justify-center items-center">
+                <img src="https://api.iconify.design/solar/letter-bold-duotone.svg?color=%236b9ba8&width=180&height=180" 
+                     alt="mailbox" 
+                     class="w-44 h-44 opacity-80 drop-shadow-lg">
             </div>
 
         </div>

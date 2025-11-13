@@ -1,5 +1,5 @@
 @extends('layouts.public') 
-@section('title', 'TutorConsult - Find Your Perfect Tutor')
+@section('title', 'HTC - Find Your Perfect Tutor')
 
 @section('content')
     
@@ -9,13 +9,12 @@
             <div class="text-center max-w-4xl mx-auto py-24">
                 
             <h1 class="font-heading text-[3rem] md:text-[3.8rem] lg:text-[4.2rem] uppercase leading-[0.9] tracking-wide text-black text-center">
-  LEARN NEW SKILLS FROM ANYWHERE, ANYTIME EASILY
-</h1>
+            Find Your Perfect Tutor, ANYTIME EASILY
+            </h1>
 
                 
                 <p class="text-lg text-text-subtle max-w-2xl mx-auto my-10">
-                    Join thousands of learners upgrading their skills through interactive lessons, expert mentors, 
-                    and always-updated course materials - all in one simple platform.
+                    Join thousands of learners upgrading their skills through interactive lessons, expert mentors - all in one simple platform.
                 </p>
                 
                 <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
@@ -31,19 +30,46 @@
                 
                 <div class="flex justify-center items-center mt-6">
                     <div class="flex mr-3">
-                        <img src="https://via.placeholder.com/36/FFBD59/10181B?text=A" alt="Avatar 1" class="w-9 h-9 rounded-full border-2 border-white -ml-2.5 first:ml-0">
-                        <img src="https://via.placeholder.com/36/006CAB/FFFFFF?text=B" alt="Avatar 2" class="w-9 h-9 rounded-full border-2 border-white -ml-2.5">
-                        <img src="https://via.placeholder.com/36/EAE6FF/10181B?text=C" alt="Avatar 3" class="w-9 h-9 rounded-full border-2 border-white -ml-2.5">
+                        <img src="https://api.dicebear.com/7.x/lorelei/svg?seed=Emma&backgroundColor=ffd5dc" alt="Student" class="w-9 h-9 rounded-full border-2 border-white -ml-2.5 first:ml-0">
+                        <img src="https://api.dicebear.com/9.x/notionists/svg?seed=Aneka&backgroundColor=b6e3f4" alt="Tutor" class="w-9 h-9 rounded-full border-2 border-white -ml-2.5">
+                        <img src="https://api.dicebear.com/9.x/lorelei/svg?backgroundColor=b6e3f4" alt="Student" class="w-9 h-9 rounded-full border-2 border-white -ml-2.5">
+                        <img src="https://api.dicebear.com/9.x/notionists/svg?seed=Felix&backgroundColor=e3f2fd" alt="Tutor" class="w-9 h-9 rounded-full border-2 border-white -ml-2.5">
                     </div>
                     <span class="font-medium text-black text-sm">10k+ Happy Learners</span>
                 </div>
             </div>
 
-            <div class="absolute top-1/4 left-10 w-36 h-40 rounded-lg bg-white/40 border border-dashed border-gray-400 flex items-center justify-center text-sm text-text-subtle z-0 pointer-events-none hidden lg:flex"> <img src="C:\XPersonal-Projects\Laravel\HTC\public\images\Hero\Grades-bro.svg">  </div>
-            <div class="absolute top-3/4 left-10 w-36 h-40 rounded-lg bg-white/40 border border-dashed border-gray-400 flex items-center justify-center text-sm text-text-subtle z-0 pointer-events-none hidden lg:flex">Bottom-Left Illus.</div>
-            <div class="absolute top-1/4 right-10 w-36 h-40 rounded-lg bg-white/40 border border-dashed border-gray-400 flex items-center justify-center text-sm text-text-subtle z-0 pointer-events-none hidden lg:flex">public\images\Hero\cuate.svg</div>
-            <div class="absolute top-3/4 right-10 w-36 h-40 rounded-lg bg-white/40 border border-dashed border-gray-400 flex items-center justify-center text-sm text-text-subtle z-0 pointer-events-none hidden lg:flex">Bottom-Right Illus.</div>
-        
+           
+
+            <!-- Top Left -->
+            <div class="absolute top-20 left-8 w-32 h-32 z-0 pointer-events-none hidden lg:block transform -rotate-12 opacity-70 hover:opacity-100 transition-all duration-300">
+                <img src="https://api.iconify.design/solar/book-bookmark-bold-duotone.svg?color=%23f09711&width=128&height=128" alt="Study" class="w-full h-full drop-shadow-lg">
+            </div>
+
+            <!-- Bottom Left -->
+            <div class="absolute bottom-24 left-16 w-28 h-28 z-0 pointer-events-none hidden lg:block transform rotate-6 opacity-60 hover:opacity-90 transition-all duration-300">
+                <img src="https://api.iconify.design/solar/diploma-bold-duotone.svg?color=%234cb9e1&width=112&height=112" alt="Graduate" class="w-full h-full drop-shadow-md">
+            </div>
+
+            <!-- Top Right -->
+            <div class="absolute top-32 right-12 w-24 h-24 z-0 pointer-events-none hidden lg:block transform rotate-12 opacity-65 hover:opacity-95 transition-all duration-300">
+                <img src="https://api.iconify.design/solar/laptop-minimalistic-bold-duotone.svg?color=%230066a1&width=96&height=96" alt="Laptop">
+            </div>
+
+            <!-- Bottom Right -->
+            <div class="absolute bottom-32 right-8 w-36 h-36 z-0 pointer-events-none hidden lg:block transform -rotate-6 opacity-70 hover:opacity-100 transition-all duration-300">
+                <img src="https://api.iconify.design/solar/cup-star-bold-duotone.svg?color=%233f8bfc&width=144&height=144" alt="Achievement" class="w-full h-full drop-shadow-lg">
+            </div>
+
+
+
+
+
+
+
+
+
+
         </div>
     </main>
     

@@ -112,10 +112,10 @@
             <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-lg shadow-gray-900/5 p-4">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                  @php($avatar = $c->profile_photo_path ? asset($c->profile_photo_path) : null)
+                  @php($avatar = $c->profile_photo_path ? (\Illuminate\Support\Str::startsWith($c->profile_photo_path, ['/storage','http']) ? asset(ltrim($c->profile_photo_path,'/')) : asset('storage/'.$c->profile_photo_path)) : null)
                   <div class="w-12 h-12 rounded-full overflow-hidden bg-primary/10 text-primary flex-shrink-0 flex items-center justify-center font-bold text-lg">
                     @if($avatar) 
-                      <img src="{{ $avatar }}" class="w-full h-full object-cover"> 
+                      <img src="{{ $avatar }}" class="w-full h-full object-cover" alt="{{ $c->first_name }}"> 
                     @else 
                       {{ strtoupper(substr($c->first_name, 0, 1)) }} 
                     @endif

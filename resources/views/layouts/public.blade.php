@@ -136,7 +136,7 @@
         </div>
     </div>
 
-    <main class="max-w-7xl mx-auto px-4">
+    <main class="max-w-6xl mx-auto px-4">
         @yield('content')
     </main>
 
