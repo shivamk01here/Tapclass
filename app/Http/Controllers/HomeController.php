@@ -96,92 +96,76 @@ class HomeController extends Controller
     {
         $query = TutorProfile::with(['user', 'subjects'])
             ->where('verification_status', 'verified');
-        
-        // Search by free text (name, subject, bio)
-        if ($request->filled('q')) {
-            $searchTerm = $request->q;
-            $query->where(function($q) use ($searchTerm) {
-                $q->whereHas('user', function($uq) use ($searchTerm) {
-                    $uq->where('name', 'like', '%' . $searchTerm . '%');
-                })
-                ->orWhereHas('subjects', function($sq) use ($searchTerm) {
-                    $sq->where('name', 'like', '%' . $searchTerm . '%');
-                })
-                ->orWhere('bio', 'like', '%' . $searchTerm . '%');
+
+        // Subjects filter (IDs)
+        $subjectIds = array_filter((array) $request->input('subjects', []));
+        if (!empty($subjectIds)) {
+            $query->whereHas('subjects', function ($q) use ($subjectIds) {
+                $q->whereIn('subjects.id', $subjectIds);
             });
         }
-        
-        // Subject filter
-        $subject = null;
-        if ($request->filled('subject')) {
-            $subject = Subject::find($request->subject);
-            if ($subject) {
-                $query->whereHas('subjects', function($sq) use ($subject) {
-                    $sq->where('subjects.id', $subject->id);
-                });
-            }
+
+        // City filter (string on tutor_profiles.city)
+        if ($request->filled('city')) {
+            $city = trim($request->string('city'));
+            $query->where(function($q) use ($city){
+                $q->where('city', 'like', '%'.$city.'%')
+                  ->orWhere('location', 'like', '%'.$city.'%');
+            });
         }
-        
-        // Mode filter
-        if ($request->filled('mode')) {
-            if ($request->mode === 'online') {
-                $query->whereIn('teaching_mode', ['online', 'both']);
-            } elseif ($request->mode === 'offline') {
-                $query->whereIn('teaching_mode', ['offline', 'both']);
-            }
-        }
-        
-        // Budget filter
-        if ($request->filled('max_price')) {
-            $query->where('hourly_rate', '<=', $request->max_price);
-        }
-        
-        // Rating filter (min of selected)
-        if ($request->filled('rating')) {
-            $minRating = min($request->rating);
-            $query->where('average_rating', '>=', $minRating);
-        }
-        
-        // Experience filter
-        if ($request->filled('experience')) {
-            $query->where('experience_years', '>=', (int)$request->experience);
-        }
-        
+
         // Gender filter
         if ($request->filled('gender')) {
-            $genders = (array)$request->gender;
-            $query->whereIn('gender', $genders);
+            $query->where('gender', $request->string('gender'));
         }
-        
-        // Nearby filter (lat/lng + radius) or pin_code fallback
-        if ($request->filled('nearby')) {
-            $radius = (float)($request->get('radius', 10)); // km
-            if ($request->filled('lat') && $request->filled('lng')) {
-                $lat = (float)$request->lat; $lng = (float)$request->lng;
-                $haversine = "(6371 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude))))";
-                $query->select('*')
-                      ->selectRaw("{$haversine} AS distance", [$lat,$lng,$lat])
-                      ->whereNotNull('latitude')->whereNotNull('longitude')
-                      ->having('distance', '<=', $radius)
-                      ->orderBy('distance');
-            } elseif ($request->filled('pincode')) {
-                $query->where('pin_code', $request->pincode);
+
+        // Mode filter (online/offline/both)
+        if ($request->filled('mode')) {
+            $mode = $request->string('mode');
+            if ($mode === 'online') {
+                $query->whereIn('teaching_mode', ['online','both']);
+            } elseif ($mode === 'offline') {
+                $query->whereIn('teaching_mode', ['offline','both']);
+            } elseif ($mode === 'both') {
+                $query->where('teaching_mode', 'both');
             }
         }
-        // Allow direct pincode search even without 'nearby'
-        if ($request->filled('pincode')) {
-            $query->where('pin_code', $request->pincode);
+
+        // Min rating
+        if ($request->filled('min_rating')) {
+            $query->where('average_rating', '>=', (int) $request->input('min_rating'));
         }
-        
-        $query->orderBy('average_rating', 'desc')
-              ->orderBy('total_reviews', 'desc');
-        
-        $tutors = $query->paginate(24)->withQueryString();
-        $subjects = Subject::where('is_active', true)->orderBy('name')->get(['id','name','icon']);
-        
-        return view('tutors.search', compact('tutors', 'subject', 'subjects'));
+
+        // Max price
+        if ($request->filled('max_price')) {
+            $query->where('hourly_rate', '<=', (int) $request->input('max_price'));
+        }
+
+        // Sort by rating and reviews
+        $tutors = $query->orderBy('average_rating', 'desc')
+            ->orderBy('total_reviews', 'desc')
+            ->paginate(30)
+            ->appends($request->query());
+
+        $selectedSubjects = [];
+        if (!empty($subjectIds)) {
+            $selectedSubjects = Subject::whereIn('id', $subjectIds)->get(['id','name']);
+        }
+
+        return view('tutors.search', [
+            'tutors' => $tutors,
+            'selectedSubjects' => $selectedSubjects,
+        ]);
     }
     
+    public function suggestCities(Request $request)
+    {
+        $q = trim((string)$request->get('q', ''));
+        $query = DB::table('cities')->select('id','name')->orderBy('name');
+        if ($q !== '') { $query->where('name','like','%'.$q.'%'); }
+        return response()->json($query->limit(50)->get());
+    }
+
     public function tutorProfile($id)
     {
         $tutor = TutorProfile::with(['user', 'subjects', 'reviews.student'])

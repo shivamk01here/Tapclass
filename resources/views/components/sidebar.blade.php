@@ -27,15 +27,25 @@
         @endforeach
     </nav>
 
-    <!-- Settings Icon -->
-    <div class="mt-auto mb-4">
-        <a href="{{ $settingsRoute }}" class="group relative flex items-center justify-center h-12 w-full hover:bg-primary/10 transition-colors">
+    <!-- Settings & Logout -->
+    <div class="mt-auto mb-2 flex flex-col items-center w-full gap-2">
+        <a href="{{ $settingsRoute }}" class="group relative flex items-center justify-center h-10 w-full hover:bg-primary/10 transition-colors" title="Settings">
             <span class="material-symbols-outlined text-gray-600 group-hover:text-primary">settings</span>
             <div class="hidden lg:block absolute left-full ml-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap transition-opacity z-50">
                 Settings
                 <div class="absolute top-1/2 -left-1 -translate-y-1/2 w-2 h-2 bg-gray-900 rotate-45"></div>
             </div>
         </a>
+        <form method="POST" action="{{ route('logout') }}" class="w-full">
+            @csrf
+            <button type="submit" class="group relative flex items-center justify-center h-10 w-full hover:bg-red-50 transition-colors" title="Logout">
+                <span class="material-symbols-outlined text-red-600">logout</span>
+                <div class="hidden lg:block absolute left-full ml-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap transition-opacity z-50">
+                    Logout
+                    <div class="absolute top-1/2 -left-1 -translate-y-1/2 w-2 h-2 bg-gray-900 rotate-45"></div>
+                </div>
+            </button>
+        </form>
     </div>
 </aside>
 

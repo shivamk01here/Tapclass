@@ -283,14 +283,20 @@ class StudentController extends Controller
 
         $user = auth()->user();
 
-        // Delete old picture if exists
-        if ($user->profile_picture && \Storage::exists('public/' . $user->profile_picture)) {
-            \Storage::delete('public/' . $user->profile_picture);
+        // Delete old picture if exists (handle both relative and "/storage/..." saved forms)
+        if ($user->profile_picture) {
+            $old = $user->profile_picture;
+            // If old starts with "/storage/", convert to relative path
+            if (str_starts_with($old, '/storage/')) {
+                $old = ltrim(substr($old, strlen('/storage/')), '/');
+            }
+            if (\Storage::disk('public')->exists($old)) {
+                \Storage::disk('public')->delete($old);
+            }
         }
 
-        // Store new picture
+        // Store new picture consistently under public/profile_pictures and save relative path
         $path = $request->file('profile_picture')->store('profile_pictures', 'public');
-
         $user->update(['profile_picture' => $path]);
 
         return back()->with('success', 'Profile picture updated successfully!');

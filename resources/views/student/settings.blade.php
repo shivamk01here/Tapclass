@@ -26,7 +26,8 @@
                 <h3 class="text-lg font-bold mb-4">Profile Picture</h3>
                 <div class="flex items-center gap-6 mb-6">
                     @if($student->profile_picture)
-                        <img src="{{ asset('storage/' . $student->profile_picture) }}" class="w-24 h-24 rounded-full object-cover border-4 border-primary/20" alt="Profile"/>
+@php $pp = $student->profile_picture; $ppUrl = \Illuminate\Support\Str::startsWith($pp, ['/storage','http']) ? asset(ltrim($pp,'/')) : asset('storage/'.$pp); @endphp
+                        <img src="{{ $ppUrl }}" class="w-24 h-24 rounded-full object-cover border-4 border-primary/20" alt="Profile"/>
                     @else
                         <div class="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center border-4 border-primary/20">
                             <span class="text-primary font-black text-4xl">{{ substr($student->name, 0, 1) }}</span>

@@ -213,5 +213,10 @@
         gsap.to('.floating-circle-3', { y: -20, x: 15, duration: 3.5, repeat: -1, yoyo: true, ease: 'sine.inOut' });
     });
 </script>
+@if(session('mail_error'))
+<script>
+  console.error('OTP email send failed:', @json(session('mail_error')));
+</script>
+@endif
 </body>
 </html>

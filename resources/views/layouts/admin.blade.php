@@ -86,6 +86,16 @@
                     <span class="material-symbols-outlined">support_agent</span>
                     <span>Consultations</span>
                 </a>
+
+                @php $regOpen = \App\Models\RegistrationIssue::where('status','open')->count(); @endphp
+                <a href="{{ route('admin.registration-issues') }}" 
+                   class="flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-colors {{ request()->routeIs('admin.registration-issues*') ? 'bg-primary/10 text-primary' : 'text-gray-700 hover:bg-gray-100' }}">
+                    <span class="material-symbols-outlined">report</span>
+                    <span>Registration Fails</span>
+                    @if($regOpen > 0)
+                        <span class="ml-auto bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ $regOpen }}</span>
+                    @endif
+                </a>
                 
                 <a href="{{ route('admin.settings') }}" 
                    class="flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-colors {{ request()->routeIs('admin.settings') ? 'bg-primary/10 text-primary' : 'text-gray-700 hover:bg-gray-100' }}">

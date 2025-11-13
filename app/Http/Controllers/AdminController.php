@@ -12,6 +12,7 @@ use App\Models\Notification;
 use App\Models\ParentConsultation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\RegistrationIssue;
 
 class AdminController extends Controller
 {
@@ -354,5 +355,25 @@ class AdminController extends Controller
         $c->status = $request->status;
         $c->save();
         return back()->with('success','Consultation status updated.');
+    }
+    public function registrationIssues(Request $request)
+    {
+        $status = $request->get('status');
+        $query = RegistrationIssue::query()->latest();
+        if ($status) { $query->where('status', $status); }
+        $issues = $query->paginate(20);
+        $counts = [
+            'open' => RegistrationIssue::where('status','open')->count(),
+            'resolved' => RegistrationIssue::where('status','resolved')->count(),
+            'total' => RegistrationIssue::count(),
+        ];
+        return view('admin.registration-issues', compact('issues','status','counts'));
+    }
+
+    public function resolveRegistrationIssue($id)
+    {
+        $issue = RegistrationIssue::findOrFail($id);
+        $issue->update(['status' => 'resolved']);
+        return back()->with('success','Issue marked as resolved.');
     }
 }

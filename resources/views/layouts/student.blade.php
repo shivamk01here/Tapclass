@@ -81,7 +81,8 @@
                 <!-- Profile Dropdown -->
                 <div class="relative group">
                     @if(auth()->user()->profile_picture)
-                        <img src="{{ asset('storage/' . auth()->user()->profile_picture) }}" class="w-8 h-8 lg:w-10 lg:h-10 rounded-full object-cover cursor-pointer border-2 border-gray-200" alt="Profile"/>
+@php $pp = auth()->user()->profile_picture; $ppUrl = \Illuminate\Support\Str::startsWith($pp, ['/storage','http']) ? asset(ltrim($pp,'/')) : asset('storage/'.$pp); @endphp
+                        <img src="{{ $ppUrl }}" class="w-8 h-8 lg:w-10 lg:h-10 rounded-full object-cover cursor-pointer border-2 border-gray-200" alt="Profile"/>
                     @else
                         <div class="w-8 h-8 lg:w-10 lg:h-10 rounded-full bg-primary/20 flex items-center justify-center cursor-pointer border-2 border-primary">
                             <span class="text-primary font-bold text-sm lg:text-lg">{{ substr(auth()->user()->name, 0, 1) }}</span>

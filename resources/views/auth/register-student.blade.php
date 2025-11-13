@@ -233,5 +233,10 @@
     </div>
 </div>
 
+@if(session('mail_error'))
+<script>
+  console.error('OTP email send failed:', @json(session('mail_error')));
+</script>
+@endif
 </body>
 </html>

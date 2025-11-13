@@ -8,8 +8,9 @@
 </div>
 
 <div class="flex items-center gap-4 mb-8">
-@if($tutor->profile_picture)
-<img src="{{ asset('storage/' . $tutor->profile_picture) }}" class="w-20 h-20 rounded-full object-cover border-2 border-primary" alt="{{ $tutor->name }}" />
+@php $pp = $tutor->profile_picture; $ppUrl = $pp ? (\Illuminate\Support\Str::startsWith($pp, ['/storage','http']) ? asset(ltrim($pp,'/')) : asset('storage/'.$pp)) : null; @endphp
+@if($ppUrl)
+<img src="{{ $ppUrl }}" class="w-20 h-20 rounded-full object-cover border-2 border-primary" alt="{{ $tutor->name }}" />
 @else
 <div class="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center border-2 border-primary">
 <span class="text-primary font-bold text-2xl">{{ substr($tutor->name, 0, 1) }}</span>

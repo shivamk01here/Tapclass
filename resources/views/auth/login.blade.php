@@ -170,7 +170,7 @@
                         <input type="checkbox" name="remember" class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary">
                         <span class="ml-2 text-text-subtle group-hover:text-black transition-colors">Remember me</span>
                     </label>
-                    <a href="{{ route('contact') }}" class="text-primary font-semibold hover:text-primary transition-colors">Forgot Password?</a>
+<a href="{{ route('password.forgot') }}" class="text-primary font-semibold hover:text-primary transition-colors">Forgot Password?</a>
                 </div>
 
                 <button 

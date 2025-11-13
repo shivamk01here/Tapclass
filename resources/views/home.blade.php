@@ -1,10 +1,4 @@
-{{--
-    THIS IS YOUR NEW /resources/views/home.blade.php FILE
-    FIX: Merged the 3 steps into one box, added new BG color, and re-added Newsletter.
---}}
-
-@extends('layouts.public') {{-- Kept this as per your file --}}
-
+@extends('layouts.public') 
 @section('title', 'TutorConsult - Find Your Perfect Tutor')
 
 @section('content')
@@ -14,9 +8,10 @@
             
             <div class="text-center max-w-4xl mx-auto py-24">
                 
-                <h1 class="font-heading text-h1-hero uppercase leading-tight font-normal">
-                    LEARN NEW SKILLS FROM ANYWHERE, ANYTIME EASILY
-                </h1>
+            <h1 class="font-heading text-[3rem] md:text-[3.8rem] lg:text-[4.2rem] uppercase leading-[0.9] tracking-wide text-black text-center">
+  LEARN NEW SKILLS FROM ANYWHERE, ANYTIME EASILY
+</h1>
+
                 
                 <p class="text-lg text-text-subtle max-w-2xl mx-auto my-10">
                     Join thousands of learners upgrading their skills through interactive lessons, expert mentors, 
@@ -44,9 +39,9 @@
                 </div>
             </div>
 
-            <div class="absolute top-1/4 left-10 w-36 h-40 rounded-lg bg-white/40 border border-dashed border-gray-400 flex items-center justify-center text-sm text-text-subtle z-0 pointer-events-none hidden lg:flex">Top-Left Illus.</div>
+            <div class="absolute top-1/4 left-10 w-36 h-40 rounded-lg bg-white/40 border border-dashed border-gray-400 flex items-center justify-center text-sm text-text-subtle z-0 pointer-events-none hidden lg:flex"> <img src="C:\XPersonal-Projects\Laravel\HTC\public\images\Hero\Grades-bro.svg">  </div>
             <div class="absolute top-3/4 left-10 w-36 h-40 rounded-lg bg-white/40 border border-dashed border-gray-400 flex items-center justify-center text-sm text-text-subtle z-0 pointer-events-none hidden lg:flex">Bottom-Left Illus.</div>
-            <div class="absolute top-1/4 right-10 w-36 h-40 rounded-lg bg-white/40 border border-dashed border-gray-400 flex items-center justify-center text-sm text-text-subtle z-0 pointer-events-none hidden lg:flex">Top-Right Illus.</div>
+            <div class="absolute top-1/4 right-10 w-36 h-40 rounded-lg bg-white/40 border border-dashed border-gray-400 flex items-center justify-center text-sm text-text-subtle z-0 pointer-events-none hidden lg:flex">public\images\Hero\cuate.svg</div>
             <div class="absolute top-3/4 right-10 w-36 h-40 rounded-lg bg-white/40 border border-dashed border-gray-400 flex items-center justify-center text-sm text-text-subtle z-0 pointer-events-none hidden lg:flex">Bottom-Right Illus.</div>
         
         </div>
@@ -180,4 +175,4 @@
 
     @include('components.newsletter')
 
-@endsection
+@endsection 

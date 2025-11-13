@@ -36,9 +36,9 @@ class StudentOnboardingController extends Controller
 
         DB::transaction(function () use ($request, $user, $profile) {
             if ($request->hasFile('profile_picture')) {
-$path = $request->file('profile_picture')->store('avatars', 'public');
-                // Save web-accessible path as stored convention: /storage/avatars/...
-                $user->update(['profile_picture' => '/storage/'.$path]);
+                // Store under public/profile_pictures and save relative path (e.g., "profile_pictures/abc.jpg")
+                $path = $request->file('profile_picture')->store('profile_pictures', 'public');
+                $user->update(['profile_picture' => $path]);
             }
 
             $profile->update([

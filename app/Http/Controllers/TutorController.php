@@ -14,7 +14,33 @@ class TutorController extends Controller
 {
     public function dashboard()
     {
-        return view('tutor.dashboard');
+        $tutorId = auth()->id();
+        $today = \Carbon\Carbon::today();
+        $monthStart = $today->copy()->startOfMonth();
+        $monthEnd = $today->copy()->endOfMonth();
+
+        // Fetch this month's bookings for the tutor
+        $bookingsThisMonth = \App\Models\Booking::where('tutor_id', $tutorId)
+            ->whereBetween('session_date', [$monthStart->toDateString(), $monthEnd->toDateString()])
+            ->get(['session_date']);
+        $hasBookings = collect($bookingsThisMonth)
+            ->groupBy(function($b){ return \Carbon\Carbon::parse($b->session_date)->toDateString(); })
+            ->map->count();
+
+        $calendar = [
+            'year' => (int)$today->format('Y'),
+            'month' => (int)$today->format('n'),
+            'monthName' => $today->format('F'),
+            'daysInMonth' => (int)$today->daysInMonth,
+            // 0=Sun .. 6=Sat
+            'firstWeekday' => (int)$monthStart->dayOfWeek,
+        ];
+
+        return view('tutor.dashboard', [
+            'calendar' => $calendar,
+            'hasBookings' => $hasBookings,
+            'todayStr' => $today->toDateString(),
+        ]);
     }
 
     public function pending()
@@ -461,6 +487,18 @@ case 'location':
             ->paginate(20);
         
         return view('tutor.notifications', compact('notifications'));
+    }
+
+    public function notificationsJson()
+    {
+        $items = Notification::where('user_id', auth()->id())
+            ->orderBy('created_at','desc')
+            ->limit(20)
+            ->get(['id','title','message','is_read','created_at']);
+        return response()->json([
+            'notifications' => $items,
+            'unread_count' => Notification::where('user_id', auth()->id())->where('is_read', false)->count(),
+        ]);
     }
 
     public function updatePicture(Request $request)

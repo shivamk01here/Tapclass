@@ -117,7 +117,8 @@
                     <td data-label="Tutor" class="px-6 py-4 md:py-4">
                         <div class="flex items-center gap-3">
                             @if($tutor->user->profile_picture)
-                            <img src="{{ asset('storage/' . $tutor->user->profile_picture) }}" class="w-10 h-10 rounded-full object-cover" alt="{{ $tutor->user->name }}" />
+                            @php $pp = $tutor->user->profile_picture; $ppUrl = \Illuminate\Support\Str::startsWith($pp, ['/storage','http']) ? asset(ltrim($pp,'/')) : asset('storage/'.$pp); @endphp
+                            <img src="{{ $ppUrl }}" class="w-10 h-10 rounded-full object-cover" alt="{{ $tutor->user->name }}" />
                             @else
                             <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
                                 <span class="text-primary font-bold">{{ substr($tutor->user->name, 0, 1) }}</span>

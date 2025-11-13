@@ -132,7 +132,9 @@
   </style>
 </head>
 <body class="bg-background-light dark:bg-background-dark font-display overflow-hidden">
-
+  <a href="{{ route('parent.dashboard') }}" class="skip-link fixed top-3 right-3 sm:top-4 sm:right-4 z-50 text-xs sm:text-sm font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white underline underline-offset-2 decoration-dotted">
+    Skip for now
+  </a>
   <div class="h-screen w-full flex items-center justify-center p-4 sm:p-6 lg:p-8">
     
     <div class="w-full max-w-5xl mx-auto bg-white dark:bg-background-dark rounded-2xl shadow-xl shadow-primary/10 overflow-hidden border border-gray-200 dark:border-gray-800">

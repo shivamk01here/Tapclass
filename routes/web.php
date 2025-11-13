@@ -17,12 +17,16 @@ use App\Http\Controllers\ReviewController;
 */
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+// Redirect any /home -> /
+Route::permanentRedirect('/home', '/');
 
 // Subject suggestions (public)
 Route::get('/subjects/suggest', [\App\Http\Controllers\StudentOnboardingController::class, 'suggestSubjects'])->name('subjects.suggest');
 // Languages suggestions and creation
 Route::get('/languages/suggest', [\App\Http\Controllers\TutorController::class, 'suggestLanguages'])->name('languages.suggest');
 Route::post('/languages', [\App\Http\Controllers\TutorController::class, 'createLanguage'])->middleware('auth')->name('languages.create');
+// City suggestions
+Route::get('/cities/suggest', [HomeController::class, 'suggestCities'])->name('cities.suggest');
 
 // Static Pages
 Route::view('/about', 'pages.about')->name('about');
@@ -43,15 +47,33 @@ Route::get('/login', [AuthController::class, 'showLogin'])->name('login')->middl
 Route::post('/login', [AuthController::class, 'login'])->middleware('guest');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+// Forgot password via OTP
+Route::get('/password/forgot', [AuthController::class, 'showForgot'])->name('password.forgot')->middleware('guest');
+Route::post('/password/forgot', [AuthController::class, 'sendForgotOtp'])->name('password.forgot.send')->middleware('guest');
+Route::get('/password/reset-otp', [AuthController::class, 'showResetOtp'])->name('password.reset-otp.show')->middleware('guest');
+Route::post('/password/reset-otp', [AuthController::class, 'resetPasswordWithOtp'])->name('password.reset-otp.submit')->middleware('guest');
+
 Route::get('/register/student', [AuthController::class, 'showStudentRegister'])->name('register.student')->middleware('guest');
 Route::post('/register/student', [AuthController::class, 'registerStudent'])->middleware('guest');
+// Student email OTP verification (non-Google flow)
+Route::get('/register/student/verify-otp', [AuthController::class, 'showStudentOtp'])->name('register.student.verify-otp.show')->middleware('guest');
+Route::post('/register/student/verify-otp', [AuthController::class, 'verifyStudentOtp'])->name('register.student.verify-otp.verify')->middleware('guest');
+Route::post('/register/student/otp-issue', [AuthController::class, 'submitStudentOtpIssue'])->name('register.student.otp-issue')->middleware('guest');
 
 Route::get('/register/tutor', [AuthController::class, 'showTutorRegister'])->name('register.tutor')->middleware('guest');
 Route::post('/register/tutor', [AuthController::class, 'registerTutor'])->middleware('guest');
+// Tutor email OTP verification (non-Google flow)
+Route::get('/register/tutor/verify-otp', [AuthController::class, 'showTutorOtp'])->name('register.tutor.verify-otp.show')->middleware('guest');
+Route::post('/register/tutor/verify-otp', [AuthController::class, 'verifyTutorOtp'])->name('register.tutor.verify-otp.verify')->middleware('guest');
+Route::post('/register/tutor/otp-issue', [AuthController::class, 'submitTutorOtpIssue'])->name('register.tutor.otp-issue')->middleware('guest');
 
 // Parent register (minimal like tutor/student)
 Route::get('/register/parent', [AuthController::class, 'showParentRegister'])->name('register.parent')->middleware('guest');
 Route::post('/register/parent', [AuthController::class, 'registerParent'])->middleware('guest');
+// Parent email OTP verification (non-Google flow)
+Route::get('/register/parent/verify-otp', [AuthController::class, 'showParentOtp'])->name('register.parent.verify-otp.show')->middleware('guest');
+Route::post('/register/parent/verify-otp', [AuthController::class, 'verifyParentOtp'])->name('register.parent.verify-otp.verify')->middleware('guest');
+Route::post('/register/parent/otp-issue', [AuthController::class, 'submitParentOtpIssue'])->name('register.parent.otp-issue')->middleware('guest');
 
 // Google OAuth
 Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('auth.google');
@@ -73,6 +95,7 @@ Route::post('/onboarding/step2', [\App\Http\Controllers\StudentOnboardingControl
 // Student app routes (require onboarding completed)
 Route::middleware(['auth', 'role:student','student.onboarded'])->prefix('student')->name('student.')->group(function () {
     Route::get('/dashboard', [StudentController::class, 'dashboard'])->name('dashboard');
+    Route::get('/profile', [StudentController::class, 'profile'])->name('profile');
     Route::get('/tutor/{id}', [StudentController::class, 'tutorProfile'])->name('tutor.profile');
     Route::get('/bookings', [StudentController::class, 'bookings'])->name('bookings');
     Route::get('/wishlist', [StudentController::class, 'wishlist'])->name('wishlist');
@@ -175,6 +198,7 @@ Route::middleware(['auth', 'role:tutor'])->prefix('tutor')->name('tutor.')->grou
             Route::post('/earnings/withdraw', [TutorController::class, 'requestWithdrawal'])->name('earnings.withdraw');
             Route::get('/availability', [TutorController::class, 'availability'])->name('availability');
             Route::post('/availability/save', [TutorController::class, 'saveAvailability'])->name('availability.save');
+            Route::get('/notifications/json', [TutorController::class, 'notificationsJson'])->name('notifications.json');
         });
         
         Route::get('/profile', [TutorController::class, 'profile'])->name('profile');
@@ -245,6 +269,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
     Route::post('/settings/update', [AdminController::class, 'updateSettings'])->name('settings.update');
     Route::get('/analytics', [AdminController::class, 'analytics'])->name('analytics');
+
+    // Registration issues (failed/complaints during signup)
+    Route::get('/registration-issues', [AdminController::class, 'registrationIssues'])->name('registration-issues');
+    Route::post('/registration-issues/{id}/resolve', [AdminController::class, 'resolveRegistrationIssue'])->name('registration-issues.resolve');
 });
 
 /*
