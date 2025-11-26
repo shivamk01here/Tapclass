@@ -33,8 +33,8 @@
         <div class="p-6">
             <!-- Logo -->
             <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2 text-primary mb-8">
-                <span class="material-symbols-outlined text-3xl">admin_panel_settings</span>
-                <h2 class="text-xl font-bold">Htc Admin</h2>
+                <img src="{{ asset('images/logo/htc.png') }}" alt="HTC Logo" class="h-10 w-auto">
+                <h2 class="text-xl font-bold">Admin</h2>
             </a>
             
             <!-- Navigation -->
