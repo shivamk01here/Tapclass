@@ -7,8 +7,7 @@
                 <!-- Column 1: Logo & Socials -->
                 <div class="md:col-span-2 lg:col-span-2">
                     <a href="{{ route('home') }}" class="flex items-center font-bold text-xl text-white group">
-                        <i class="bi bi-mortarboard-fill text-accent-yellow text-2xl mr-2"></i>
-                        htc
+                        <img src="{{ asset('images/logo/htc.png') }}" alt="HTC Logo" class="h-10 w-auto">
                     </a>
                     <p class="my-4 max-w-xs text-sm leading-relaxed">
                         Connecting students with qualified tutors for personalized learning experiences.

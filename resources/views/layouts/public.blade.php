@@ -66,8 +66,7 @@
         <div class="max-w-5xl mx-auto px-4">
             <nav class="flex items-center justify-between bg-white border-2 border-black rounded-xl py-2.5 px-6 shadow-header-chunky">
                 <a href="{{ route('home') }}" class="flex-shrink-0 flex items-center font-bold text-xl text-black group">
-                    <i class="bi bi-mortarboard-fill text-accent-yellow text-2xl mr-2 transition-transform duration-300 group-hover:rotate-15"></i>
-                    <span class="text-primary">HTC</span>
+                    <img src="{{ asset('images/logo/htc.png') }}" alt="HTC Logo" class="h-10 w-auto">
                 </a>
                 <button @click="mobileMenuOpen = !mobileMenuOpen" class="lg:hidden p-2 rounded-lg hover:bg-gray-100">
                     <i class="bi bi-list text-3xl"></i>

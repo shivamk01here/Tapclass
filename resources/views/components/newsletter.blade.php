@@ -1,10 +1,10 @@
 <div class="max-w-7xl mx-auto px-4 py-12">
-    <div class="bg-subscribe-bg border-2 border-black rounded-2xl shadow-header-chunky p-8 md:p-12 overflow-hidden relative">
+    <div class="bg-subscribe-bg border-2 border-black rounded-2xl shadow-header-chunky p-6 md:p-12 overflow-hidden relative">
         <div class="absolute inset-0 bg-[url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 400 400"><defs><filter id="n" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch" /><feComponentTransfer><feFuncA type="linear" slope="0.7" intercept="0.1" /></feComponentTransfer><feColorMatrix type="saturate" values="0" /><feBlend in="SourceGraphic" mode="multiply" /></filter></defs><rect width="100%" height="100%" fill="%23D1E3E6" /><rect width="100%" height="100%" filter="url(%23n)" fill-opacity="0.3" /></svg>'</div>
         
         <div class="relative z-10 grid md:grid-cols-2 gap-8 items-center">
             <div>
-                <h2 class="font-heading text-4xl uppercase leading-tight font-normal">
+                <h2 class="font-heading text-2xl md:text-4xl uppercase leading-tight font-normal">
                     SUBSCRIBE TODAY FOR SMARTER LEARNING
                 </h2>
                 <p class="text-text-subtle mt-4 mb-6">
