@@ -35,18 +35,18 @@
           Frequently Asked Questions
         </h2>
 
-        <div id="accordion-faq" class="space-y-4">
+        <div x-data="{ active: null }" class="space-y-4">
           @foreach($faqs as $i => $faq)
           <div class="bg-white border-2 border-black rounded-xl shadow-button-chunky transition-transform duration-100 hover:-translate-y-0.5">
             <button 
               type="button"
-              class="w-full flex items-center justify-between px-5 py-4 text-left font-semibold text-black text-[15px] focus:outline-none"
-              data-accordion-target="#faq-{{ $i }}">
+              @click="active = (active === {{ $i }} ? null : {{ $i }})"
+              class="w-full flex items-center justify-between px-5 py-4 text-left font-semibold text-black text-[15px] focus:outline-none">
               <span>{{ $faq['q'] }}</span>
-              <span class="accordion-icon text-2xl font-bold select-none">+</span>
+              <span class="text-2xl font-bold select-none" x-text="active === {{ $i }} ? '–' : '+'">+</span>
             </button>
 
-            <div id="faq-{{ $i }}" class="overflow-hidden transition-all duration-300 ease-in-out max-h-0 px-5 text-[14px] text-gray-700">
+            <div x-show="active === {{ $i }}" x-collapse class="px-5 text-[14px] text-gray-700">
               <div class="pb-4">{{ $faq['a'] }}</div>
             </div>
           </div>
@@ -61,33 +61,3 @@
     </div>
   </div>
 </div>
-
-@push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const accordions = document.querySelectorAll('[data-accordion-target]');
-  
-  accordions.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const target = document.querySelector(btn.dataset.accordionTarget);
-      const icon = btn.querySelector('.accordion-icon');
-      const isOpen = target.classList.contains('open');
-
-      // Close all others
-      document.querySelectorAll('#accordion-faq div[id^="faq-"]').forEach(el => {
-        el.style.maxHeight = null;
-        el.classList.remove('open');
-      });
-      document.querySelectorAll('.accordion-icon').forEach(ic => ic.textContent = '+');
-
-      // Open clicked one
-      if (!isOpen) {
-        target.classList.add('open');
-        target.style.maxHeight = target.scrollHeight + 'px';
-        icon.textContent = '–';
-      }
-    });
-  });
-});
-</script>
-@endpush

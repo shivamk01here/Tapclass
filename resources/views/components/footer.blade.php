@@ -2,45 +2,37 @@
     <footer class="bg-footer-bg text-gray-300 pt-16">
         <div class="max-w-6xl mx-auto px-4"> 
             
-            <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr] gap-8">
                 
                 <!-- Column 1: Logo & Socials -->
-                <div class="md:col-span-2 lg:col-span-2">
-                    <a href="{{ route('home') }}" class="flex items-center font-bold text-xl text-white group">
+                <div>
+                    <a href="{{ route('home') }}" class="flex items-center font-bold text-xl text-white group mb-4">
                         <img src="{{ asset('images/logo/htc.png') }}" alt="HTC Logo" class="h-10 w-auto">
                     </a>
-                    <p class="my-4 max-w-xs text-sm leading-relaxed">
+                    <p class="my-4 text-sm leading-relaxed">
                         Connecting students with qualified tutors for personalized learning experiences.
                     </p>
-                    <div class="flex space-x-4">
-                        <a href="#" class="text-xl hover:text-accent-yellow transition-colors"><i class="bi bi-facebook"></i></a>
-                        <a href="#" class="text-xl hover:text-accent-yellow transition-colors"><i class="bi bi-instagram"></i></a>
-                        <a href="#" class="text-xl hover:text-accent-yellow transition-colors"><i class="bi bi-twitter-x"></i></a>
-                        <a href="#" class="text-xl hover:text-accent-yellow transition-colors"><i class="bi bi-tiktok"></i></a>
+                    <div class="flex space-x-4 mb-6">
+                        <a href="https://www.facebook.com/share/1DLVmPjUPr/?mibextid=wwXIfr" target="_blank" class="text-3xl hover:text-accent-yellow transition-colors"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-3xl hover:text-accent-yellow transition-colors"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="text-3xl hover:text-accent-yellow transition-colors"><i class="bi bi-linkedin"></i></a>
                     </div>
                 </div>
 
-                <!-- Column 2: Quick Links -->
+                <!-- Column 2: Quick Links (Merged) -->
                 <div>
                     <h5 class="font-bold text-white uppercase mb-4">Quick Links</h5>
                     <ul class="space-y-3">
                         <li><a href="{{ route('tutors.search') }}" class="text-sm hover:text-accent-yellow transition-colors">Find Tutors</a></li>
                         <li><a href="{{ route('login') }}" class="text-sm hover:text-accent-yellow transition-colors">Login</a></li>
                         <li><a href="{{ route('register') }}" class="text-sm hover:text-accent-yellow transition-colors">Register</a></li>
-                    </ul>
-                </div>
-
-                <!-- Column 3: Company -->
-                <div>
-                    <h5 class="font-bold text-white uppercase mb-4">Company</h5>
-                    <ul class="space-y-3">
                         <li><a href="{{ route('about') }}" class="text-sm hover:text-accent-yellow transition-colors">About Us</a></li>
                         <li><a href="{{ route('contact') }}" class="text-sm hover:text-accent-yellow transition-colors">Contact</a></li>
                         <li><a href="#" class="text-sm hover:text-accent-yellow transition-colors">Blog</a></li>
                     </ul>
                 </div>
 
-                <!-- Column 4: Join -->
+                <!-- Column 3: Join Us -->
                 <div>
                     <h5 class="font-bold text-white uppercase mb-4">Join Us</h5>
                     <ul class="space-y-3">
@@ -48,6 +40,24 @@
                         <li><a href="{{ route('register.tutor') }}" class="text-sm hover:text-accent-yellow transition-colors">Become a Tutor</a></li>
                         <li><a href="{{ route('register.parent') }}" class="text-sm hover:text-accent-yellow transition-colors">Register as Parent</a></li>
                     </ul>
+                </div>
+
+                <!-- Column 4: Contact Info -->
+                <div>
+                    <h5 class="font-bold text-white uppercase mb-4">Contact Us</h5>
+                    <div class="text-sm text-gray-400 space-y-2">
+                        <p><i class="bi bi-telephone mr-2"></i> +91 9278000191</p>
+                        <p class="flex items-start">
+                            <i class="bi bi-geo-alt mr-2 mt-1"></i>
+                            <span>
+                                A-590 LIGHT HOUSE PROJECT,<br>
+                                AWADH VIHAR YOJANA,<br>
+                                UTHRETIYA SHAHID PATH,<br>
+                                LUCKNOW 226002,<br>
+                                UTTAR PRADESH
+                            </span>
+                        </p>
+                    </div>
                 </div>
 
             </div> 
