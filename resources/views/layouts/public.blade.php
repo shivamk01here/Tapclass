@@ -73,6 +73,12 @@
                 </button>
                 <ul class="hidden lg:flex items-center mx-auto space-x-1">
                     <li><a href="{{ route('tutors.search') }}" class="block font-semibold uppercase text-xxs py-1.5 px-3 hover:text-primary transition-colors">Find Tutors</a></li>
+                    <li>
+                        <a href="{{ route('ai-test.landing') }}" class="block font-semibold uppercase text-xxs py-1.5 px-3 hover:text-primary transition-colors flex items-center gap-1">
+                            AI Exam Prep
+                            <span class="bg-red-500 text-white text-[10px] px-1 rounded-sm">NEW</span>
+                        </a>
+                    </li>
                     <li><a href="{{ route('about') }}" class="block font-semibold uppercase text-xxs py-1.5 px-3 hover:text-primary transition-colors">About Us</a></li>
                     <li><a href="{{ route('contact') }}" class="block font-semibold uppercase text-xxs py-1.5 px-3 hover:text-primary transition-colors">Contact</a></li>
                 </ul>
@@ -110,6 +116,10 @@
 
             <div x-show="mobileMenuOpen" x-transition @click.away="mobileMenuOpen = false" class="lg:hidden bg-white border-2 border-black rounded-xl shadow-header-chunky p-6 mt-3 space-y-4">
                 <a href="{{ route('tutors.search') }}" class="block font-semibold uppercase text-sm py-2 px-3 hover:bg-gray-100 rounded-lg">Find Tutors</a>
+                <a href="{{ route('ai-test.landing') }}" class="block font-semibold uppercase text-sm py-2 px-3 hover:bg-gray-100 rounded-lg flex items-center gap-2">
+                    AI Exam Prep
+                    <span class="bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-sm">NEW</span>
+                </a>
                 <a href="{{ route('about') }}" class="block font-semibold uppercase text-sm py-2 px-3 hover:bg-gray-100 rounded-lg">About Us</a>
                 <a href="{{ route('contact') }}" class="block font-semibold uppercase text-sm py-2 px-3 hover:bg-gray-100 rounded-lg">Contact</a>
                 <hr class="border-t border-black/20 my-4">

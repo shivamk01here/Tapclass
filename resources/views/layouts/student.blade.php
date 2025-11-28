@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
-    <script>tailwind.config={theme:{extend:{colors:{"primary":"#13a4ec","secondary":"#FFA500"},fontFamily:{"display":["Manrope","sans-serif"]}}}}</script>
+    <script>tailwind.config={theme:{extend:{colors:{"primary":"#0071b3","secondary":"#FFA500"},fontFamily:{"display":["Manrope","sans-serif"]}}}}</script>
     @stack('styles')
 </head>
 <body class="bg-[#f6f7f8] font-display">

@@ -72,6 +72,53 @@
 
         </div>
     </main>
+
+    <!-- AI Mock Test Marketing Block -->
+    <section class="py-12 bg-black text-white relative overflow-hidden">
+        <div class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+        <div class="max-w-7xl mx-auto px-4 relative z-10">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+                <div class="flex-1 text-center md:text-left">
+                    <span class="inline-block py-1 px-3 rounded bg-accent-yellow text-black text-xs font-bold uppercase tracking-wider mb-4">New Feature</span>
+                    <h2 class="font-heading text-4xl md:text-5xl uppercase leading-none mb-4">Don't Just Learn. <span class="text-accent-yellow">Prove It.</span></h2>
+                    <p class="text-gray-300 text-lg max-w-xl mb-8">Generate custom mock tests in seconds using AI. Pinpoint your weak areas before the real exam does.</p>
+                    <a href="{{ route('ai-test.landing') }}" class="inline-block bg-accent-yellow text-black font-bold py-3 px-8 rounded-lg shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:translate-y-1 hover:shadow-none transition-all">
+                        Start Free Assessment
+                    </a>
+                </div>
+                <div class="flex-1 flex justify-center md:justify-end">
+                    <div class="relative w-full max-w-md bg-gray-900 rounded-xl border border-gray-700 p-6 shadow-2xl transform rotate-2 hover:rotate-0 transition-transform duration-500">
+                        <div class="flex items-center gap-2 mb-4 border-b border-gray-700 pb-4">
+                            <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                            <span class="ml-auto text-xs text-gray-500 font-mono">AI_Generator.exe</span>
+                        </div>
+                        <div class="space-y-3 font-mono text-sm">
+                            <div class="flex gap-2">
+                                <span class="text-green-400">➜</span>
+                                <span class="text-white">Generating test for:</span>
+                                <span class="text-accent-yellow">Physics / Thermodynamics</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <span class="text-green-400">➜</span>
+                                <span class="text-white">Difficulty:</span>
+                                <span class="text-red-400">Hard (JEE Advanced)</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <span class="text-green-400">➜</span>
+                                <span class="text-white">Analyzing weak spots...</span>
+                            </div>
+                            <div class="mt-4 p-3 bg-gray-800 rounded border border-gray-700 text-gray-300">
+                                <span class="block mb-2 text-xs uppercase tracking-widest text-gray-500">Output</span>
+                                "Q1: Calculate the entropy change in an adiabatic reversible expansion..."
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
     
     <section class="py-16 md:py-24" id="how-it-works">
         <div class="max-w-7xl mx-auto px-4">
