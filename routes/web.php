@@ -45,7 +45,8 @@ Route::get('/booking/create/{tutorId}', [BookingController::class, 'create'])->n
 // AI Mock Test Module
 Route::get('/ai-mock-tests', [App\Http\Controllers\AiTestController::class, 'landing'])->name('ai-test.landing');
 Route::get('/ai-mock-tests/create', [App\Http\Controllers\AiTestController::class, 'create'])->name('ai-test.create');
-Route::post('/ai-mock-tests/validate-topic', [App\Http\Controllers\AiTestController::class, 'validateTopic'])->name('ai-test.validate');
+    Route::post('/ai-test/validate-exam', [App\Http\Controllers\AiTestController::class, 'validateExam'])->name('ai-test.validate-exam');
+    Route::post('/ai-test/validate', [App\Http\Controllers\AiTestController::class, 'validateTopic'])->name('ai-test.validate');
 Route::post('/ai-mock-tests/generate', [App\Http\Controllers\AiTestController::class, 'generate'])->name('ai-test.generate')->middleware('auth');
 
 Route::post('/ai-mock-tests/generate', [App\Http\Controllers\AiTestController::class, 'generate'])->name('ai-test.generate')->middleware('auth');

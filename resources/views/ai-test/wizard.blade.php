@@ -59,13 +59,58 @@
                     </button>
                 </div>
 
-                <div x-show="form.exam === 'Other'" class="mb-6">
-                    <label class="block text-sm text-gray-400 mb-2">Specify Exam Name</label>
-                    <input type="text" x-model="customExam" class="w-full bg-black border border-gray-700 rounded-lg p-3 text-white focus:border-accent-yellow focus:ring-1 focus:ring-accent-yellow outline-none" placeholder="e.g. UPSC, GMAT, Class 10 Boards">
+                <div x-show="form.exam === 'Other'" class="mb-6 space-y-4">
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Specify Exam Name</label>
+                        <div class="flex gap-2">
+                            <input type="text" x-model="customExam" 
+                                @keydown.enter.prevent="validateExamInput()"
+                                :disabled="examValidated"
+                                class="flex-1 bg-black border border-gray-700 rounded-lg p-3 text-white focus:border-accent-yellow focus:ring-1 focus:ring-accent-yellow outline-none disabled:opacity-50 disabled:cursor-not-allowed" 
+                                placeholder="e.g. UPSC, GMAT, Class 10 Boards">
+                            
+                            <button @click="validateExamInput()" 
+                                x-show="!examValidated"
+                                :disabled="!customExam || validatingExam"
+                                class="bg-gray-800 text-white px-4 rounded-lg hover:bg-gray-700 disabled:opacity-50 transition-colors flex items-center gap-2">
+                                <span x-show="validatingExam" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                                <span x-text="validatingExam ? 'Checking...' : 'Verify'"></span>
+                            </button>
+
+                            <button @click="resetExamValidation()" 
+                                x-show="examValidated"
+                                class="bg-gray-800 text-red-400 px-4 rounded-lg hover:bg-gray-700 transition-colors">
+                                Change
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Suggestions -->
+                    <div x-show="examSuggestions.length > 0 && !examValidated" class="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                        <p class="text-sm text-gray-400 mb-3">Did you mean one of these?</p>
+                        <div class="flex flex-wrap gap-2">
+                            <template x-for="suggestion in examSuggestions" :key="suggestion">
+                                <button @click="selectSuggestion(suggestion)" 
+                                    class="px-3 py-1.5 bg-black border border-gray-600 rounded-full text-sm hover:border-accent-yellow hover:text-accent-yellow transition-colors">
+                                    <span x-text="suggestion"></span>
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Validation Message -->
+                    <div x-show="examValidationMsg" 
+                        :class="{'text-green-400': examValidated, 'text-red-400': !examValidated}"
+                        class="text-sm flex items-center gap-2">
+                        <span class="material-symbols-outlined text-lg" x-text="examValidated ? 'check_circle' : 'error'"></span>
+                        <span x-text="examValidationMsg"></span>
+                    </div>
                 </div>
 
                 <div class="flex justify-end">
-                    <button @click="nextStep()" :disabled="!form.exam || (form.exam === 'Other' && !customExam)" class="bg-white text-black font-bold py-3 px-8 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                    <button @click="nextStep()" 
+                        :disabled="!form.exam || (form.exam === 'Other' && !examValidated)" 
+                        class="bg-white text-black font-bold py-3 px-8 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
                         Next Step
                     </button>
                 </div>
@@ -179,6 +224,37 @@
                 </div>
             </div>
 
+            <!-- Correction Modal -->
+            <div x-show="showCorrectionModal" style="display: none;" class="absolute inset-0 bg-black/90 backdrop-blur-sm z-40 flex items-center justify-center p-4" x-transition>
+                <div class="bg-gray-900 border border-gray-700 rounded-xl p-6 max-w-md w-full shadow-2xl">
+                    <div class="flex items-center gap-3 mb-4 text-accent-yellow">
+                        <span class="material-symbols-outlined text-3xl">lightbulb</span>
+                        <h3 class="text-xl font-bold">Did you mean?</h3>
+                    </div>
+                    
+                    <p class="text-gray-300 mb-6">We found a more standard name for your topic. Would you like to use this instead?</p>
+                    
+                    <div class="bg-black/50 rounded-lg p-4 mb-6 border border-gray-800">
+                        <div class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
+                            <span class="text-gray-500">Subject:</span>
+                            <span class="font-bold text-white" x-text="correctionData.subject"></span>
+                            
+                            <span class="text-gray-500">Topic:</span>
+                            <span class="font-bold text-white" x-text="correctionData.topic"></span>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3">
+                        <button @click="applyCorrection()" class="flex-1 bg-accent-yellow text-black font-bold py-3 rounded-lg hover:bg-white transition-colors">
+                            Yes, Use This
+                        </button>
+                        <button @click="skipCorrection()" class="flex-1 bg-gray-800 text-white font-bold py-3 rounded-lg hover:bg-gray-700 transition-colors">
+                            No, Keep Mine
+                        </button>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
@@ -193,6 +269,12 @@
             loadingMessage: '',
             exams: ['JEE Mains', 'JEE Advanced', 'NEET', 'SAT', 'CBSE Class 12', 'CBSE Class 10'],
             customExam: '',
+            validatingExam: false,
+            examValidated: false,
+            examSuggestions: [],
+            examValidationMsg: '',
+            showCorrectionModal: false,
+            correctionData: { subject: '', topic: '' },
             form: {
                 exam: '',
                 subject: '',
@@ -201,11 +283,64 @@
                 count: 10
             },
             validationError: '',
+
+            async validateExamInput() {
+                if (!this.customExam) return;
+                
+                this.validatingExam = true;
+                this.examValidationMsg = '';
+                this.examSuggestions = [];
+                
+                try {
+                    const response = await fetch("{{ route('ai-test.validate-exam') }}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                        },
+                        body: JSON.stringify({ exam: this.customExam })
+                    });
+                    
+                    const data = await response.json();
+                    console.log('Exam Validation Response:', data);
+                    
+                    if (data.valid) {
+                        if (data.match_type === 'exact') {
+                            this.customExam = data.exam;
+                            this.examValidated = true;
+                            this.examValidationMsg = 'Exam verified: ' + data.exam;
+                        } else if (data.match_type === 'ambiguous') {
+                            this.examSuggestions = data.suggestions;
+                            this.examValidationMsg = 'Please select the exact exam from the suggestions.';
+                        }
+                    } else {
+                        console.error('Validation Logic Error:', data);
+                        this.examValidationMsg = data.reason || 'Invalid exam name. Please try again.';
+                    }
+                } catch (error) {
+                    console.error('Exam validation network/server error:', error);
+                    this.examValidationMsg = 'Validation failed. Check console for details.';
+                } finally {
+                    this.validatingExam = false;
+                }
+            },
+
+            selectSuggestion(suggestion) {
+                this.customExam = suggestion;
+                this.examSuggestions = [];
+                this.examValidated = true;
+                this.examValidationMsg = 'Exam verified: ' + suggestion;
+            },
+
+            resetExamValidation() {
+                this.examValidated = false;
+                this.examValidationMsg = '';
+                this.examSuggestions = [];
+            },
             
             nextStep() {
                 if (this.step === 1) {
                     if (!this.isLoggedIn) {
-                        // Redirect to login with return URL
                         window.location.href = "{{ route('login') }}?redirect={{ route('ai-test.create') }}";
                         return;
                     }
@@ -215,10 +350,12 @@
             
             async validateAndNext() {
                 this.loading = true;
-                this.loadingMessage = 'Validating Topic with AI...';
+                this.loadingMessage = 'Verifying Topic...'; // Generic message
                 this.validationError = '';
                 
                 try {
+                    const examName = this.form.exam === 'Other' ? this.customExam : this.form.exam;
+                    
                     const response = await fetch("{{ route('ai-test.validate') }}", {
                         method: 'POST',
                         headers: {
@@ -226,6 +363,7 @@
                             'X-CSRF-TOKEN': "{{ csrf_token() }}"
                         },
                         body: JSON.stringify({
+                            exam: examName,
                             subject: this.form.subject,
                             topic: this.form.topic
                         })
@@ -234,8 +372,17 @@
                     const data = await response.json();
                     
                     if (data.valid) {
-                        if (data.corrected_subject) this.form.subject = data.corrected_subject;
-                        if (data.corrected_topic) this.form.topic = data.corrected_topic;
+                        // Check if corrections were made
+                        if (data.corrected_subject !== this.form.subject || data.corrected_topic !== this.form.topic) {
+                            // Show custom modal instead of confirm()
+                            this.correctionData = {
+                                subject: data.corrected_subject,
+                                topic: data.corrected_topic
+                            };
+                            this.showCorrectionModal = true;
+                            this.loading = false; // Stop loading to show modal
+                            return; // Wait for user action
+                        }
                         this.step++;
                     } else {
                         this.validationError = data.reason || 'Invalid topic for this subject.';
@@ -244,8 +391,22 @@
                     console.error('Validation error:', error);
                     this.validationError = 'Failed to validate. Please try again.';
                 } finally {
-                    this.loading = false;
+                    if (!this.showCorrectionModal) {
+                        this.loading = false;
+                    }
                 }
+            },
+
+            applyCorrection() {
+                this.form.subject = this.correctionData.subject;
+                this.form.topic = this.correctionData.topic;
+                this.showCorrectionModal = false;
+                this.step++;
+            },
+
+            skipCorrection() {
+                this.showCorrectionModal = false;
+                this.step++;
             },
             
             async generateTest() {

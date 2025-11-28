@@ -20,15 +20,36 @@ class AiTestController extends Controller
         return view('ai-test.wizard', compact('credits', 'isLoggedIn'));
     }
 
+    public function validateExam(Request $request)
+    {
+        $request->validate([
+            'exam' => 'required|string',
+        ]);
+
+        $service = new \App\Services\OpenRouterService();
+        $result = $service->validateExam($request->exam);
+
+        if (isset($result['error'])) {
+            return response()->json(['valid' => false, 'reason' => $result['error']], 500);
+        }
+
+        if ($result) {
+            return response()->json($result);
+        }
+
+        return response()->json(['valid' => false, 'reason' => 'Unknown Error'], 500);
+    }
+
     public function validateTopic(Request $request)
     {
         $request->validate([
+            'exam' => 'required|string',
             'subject' => 'required|string',
             'topic' => 'required|string',
         ]);
 
         $service = new \App\Services\OpenRouterService();
-        $result = $service->validateTopic($request->subject, $request->topic);
+        $result = $service->validateTopic($request->exam, $request->subject, $request->topic);
 
         if (isset($result['error'])) {
             return response()->json(['valid' => false, 'reason' => $result['error']], 500);
