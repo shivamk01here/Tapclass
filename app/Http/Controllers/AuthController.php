@@ -42,6 +42,11 @@ class AuthController extends Controller
 
             $user = Auth::user();
 
+            // Check for explicit redirect parameter (e.g. from AI test flow)
+            if ($request->has('redirect') && $request->filled('redirect')) {
+                return redirect($request->input('redirect'));
+            }
+
             // Redirect based on role
             if ($user->isStudent()) {
                 return redirect()->route('student.dashboard');
@@ -553,6 +558,11 @@ class AuthController extends Controller
             session(['oauth_role' => $request->role]);
         }
         
+        // Store redirect URL if present
+        if ($request->has('redirect') && $request->filled('redirect')) {
+            session(['oauth_redirect' => $request->redirect]);
+        }
+        
         return Socialite::driver('google')
             ->with(['access_type' => 'offline'])
             ->scopes(['email', 'profile'])
@@ -575,6 +585,12 @@ class AuthController extends Controller
                 Auth::login($user);
                 
                 // Redirect based on role
+                if (session()->has('oauth_redirect')) {
+                    $redirectUrl = session('oauth_redirect');
+                    session()->forget('oauth_redirect');
+                    return redirect($redirectUrl);
+                }
+
                 if ($user->isStudent()) {
                     return redirect()->route('student.dashboard');
                 } elseif ($user->isTutor()) {

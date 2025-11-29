@@ -39,11 +39,12 @@
     <nav class="bg-black border-b border-white/10 py-4">
         <div class="max-w-7xl mx-auto px-4 flex items-center justify-between">
             <!-- Left: Logo + X -->
-            <div class="flex items-center gap-3">
-                <a href="{{ route('home') }}" class="flex items-center">
-                    <img src="{{ asset('images/ai/white_htc.png') }}" alt="HTC Logo" class="h-8 w-auto">
+            <!-- Left: htcX Text -->
+            <div class="flex items-center gap-1">
+                <a href="{{ route('home') }}" class="flex items-center no-underline hover:opacity-80 transition-opacity">
+                    <span class="text-white font-heading text-3xl tracking-tighter">htc</span>
+                    <span class="text-accent-yellow font-heading text-3xl">X</span>
                 </a>
-                <span class="text-white font-heading text-2xl">X</span>
             </div>
 
             <!-- Right: Dashboard/Logout -->

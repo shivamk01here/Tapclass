@@ -130,6 +130,9 @@
 
             <form method="POST" action="{{ route('login') }}" class="space-y-4 mb-6">
                 @csrf
+                @if(request()->has('redirect'))
+                    <input type="hidden" name="redirect" value="{{ request('redirect') }}">
+                @endif
                 <div>
                     <label class="block text-xs font-bold text-black mb-1.5" for="email">
                         Email Address
@@ -190,7 +193,7 @@
                 </div>
             </div>
 
-            <a href="{{ route('auth.google', ['role' => 'student']) }}" 
+            <a href="{{ route('auth.google', ['role' => 'student', 'redirect' => request('redirect')]) }}" 
                class="w-full flex items-center justify-center gap-2.5 px-4 py-2.5 border-2 border-black rounded-lg bg-white shadow-button-chunky relative top-0 transition-all duration-100 ease-in-out hover:top-0.5 hover:shadow-button-chunky-hover active:top-1 active:shadow-button-chunky-active group">
                 <svg class="w-4 h-4" viewBox="0 0 24 24">
                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>

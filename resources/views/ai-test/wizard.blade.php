@@ -45,42 +45,20 @@
                     Select Exam Goal
                 </h2>
                 
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
-                    <template x-for="exam in exams" :key="exam">
-                        <button @click="selectExam(exam)" 
-                            :class="{'bg-accent-yellow text-black border-accent-yellow': form.exam === exam, 'bg-black border-white/20 hover:border-white/50 text-gray-300': form.exam !== exam}"
-                            class="p-3 rounded-lg border text-center font-bold text-xs transition-all">
-                            <span x-text="exam"></span>
-                        </button>
-                    </template>
-                    
-                    <!-- Custom Option -->
-                    <button @click="selectExam('Custom')" 
-                        :class="{'bg-accent-yellow text-black border-accent-yellow': form.exam === 'Custom', 'bg-black border-white/20 hover:border-white/50 text-gray-300': form.exam !== 'Custom'}"
-                        class="p-3 rounded-lg border text-center font-bold text-xs transition-all">
-                        Custom
-                    </button>
-
-                    <button @click="selectExam('Other')" 
-                        :class="{'bg-accent-yellow text-black border-accent-yellow': form.exam === 'Other', 'bg-black border-white/20 hover:border-white/50 text-gray-300': form.exam !== 'Other'}"
-                        class="p-3 rounded-lg border text-center font-bold text-xs transition-all">
-                        Other
-                    </button>
-                </div>
-
-                <!-- Other Exam Input -->
-                <div x-show="form.exam === 'Other'" class="mb-6 space-y-3">
-                    <div>
-                        <label class="block text-xs text-gray-500 mb-1">Specify Exam Name</label>
+                <!-- 1. Direct Input (Search/Specify) -->
+                <div class="mb-8">
+                    <label class="block text-xs text-gray-500 mb-2 uppercase tracking-wider font-bold">Search or Specify Exam</label>
+                    <div class="space-y-3">
                         <div class="flex gap-2">
                             <input type="text" x-model="customExam" 
+                                @input="form.exam = 'Other'; examValidated = false"
                                 @keydown.enter.prevent="validateExamInput()"
-                                :disabled="examValidated"
-                                class="flex-1 bg-black border border-white/20 rounded-lg p-2.5 text-white text-sm focus:border-accent-yellow focus:ring-1 focus:ring-accent-yellow outline-none disabled:opacity-50 disabled:cursor-not-allowed placeholder-gray-700" 
+                                :disabled="examValidated && form.exam === 'Other'"
+                                class="flex-1 bg-black border border-white/20 rounded-lg p-3 text-white text-sm focus:border-accent-yellow focus:ring-1 focus:ring-accent-yellow outline-none disabled:opacity-50 disabled:cursor-not-allowed placeholder-gray-700" 
                                 placeholder="e.g. UPSC, GMAT, Class 10 Boards">
                             
                             <button @click="validateExamInput()" 
-                                x-show="!examValidated"
+                                x-show="!examValidated || form.exam !== 'Other'"
                                 :disabled="!customExam || validatingExam"
                                 class="bg-white/10 text-white px-4 rounded-lg hover:bg-white/20 disabled:opacity-50 transition-colors flex items-center gap-2 text-xs font-bold">
                                 <span x-show="validatingExam" class="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
@@ -88,36 +66,64 @@
                             </button>
 
                             <button @click="resetExamValidation()" 
-                                x-show="examValidated"
+                                x-show="examValidated && form.exam === 'Other'"
                                 class="bg-white/10 text-red-400 px-4 rounded-lg hover:bg-white/20 transition-colors text-xs font-bold">
                                 Change
                             </button>
                         </div>
-                    </div>
 
-                    <!-- Suggestions -->
-                    <div x-show="examSuggestions.length > 0 && !examValidated" class="bg-white/5 border border-white/10 rounded-lg p-3">
-                        <p class="text-xs text-gray-500 mb-2">Did you mean one of these?</p>
-                        <div class="flex flex-wrap gap-2">
-                            <template x-for="suggestion in examSuggestions" :key="suggestion">
-                                <button @click="selectSuggestion(suggestion)" 
-                                    class="px-2.5 py-1 bg-black border border-white/20 rounded-full text-xs text-gray-300 hover:border-accent-yellow hover:text-accent-yellow transition-colors">
-                                    <span x-text="suggestion"></span>
-                                </button>
-                            </template>
+                        <!-- Suggestions -->
+                        <div x-show="examSuggestions.length > 0 && !examValidated" class="bg-white/5 border border-white/10 rounded-lg p-3">
+                            <p class="text-xs text-gray-500 mb-2">Did you mean one of these?</p>
+                            <div class="flex flex-wrap gap-2">
+                                <template x-for="suggestion in examSuggestions" :key="suggestion">
+                                    <button @click="selectSuggestion(suggestion)" 
+                                        class="px-2.5 py-1 bg-black border border-white/20 rounded-full text-xs text-gray-300 hover:border-accent-yellow hover:text-accent-yellow transition-colors">
+                                        <span x-text="suggestion"></span>
+                                    </button>
+                                </template>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Validation Message -->
-                    <div x-show="examValidationMsg" 
-                        :class="{'text-green-400': examValidated, 'text-red-400': !examValidated}"
-                        class="text-xs flex items-center gap-1.5">
-                        <span class="material-symbols-outlined text-sm" x-text="examValidated ? 'check_circle' : 'error'"></span>
-                        <span x-text="examValidationMsg"></span>
+                        <!-- Validation Message -->
+                        <div x-show="examValidationMsg" 
+                            :class="{'text-green-400': examValidated, 'text-red-400': !examValidated}"
+                            class="text-xs flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-sm" x-text="examValidated ? 'check_circle' : 'error'"></span>
+                            <span x-text="examValidationMsg"></span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="flex justify-end">
+                <!-- Divider -->
+                <div class="relative flex py-2 items-center mb-6">
+                    <div class="flex-grow border-t border-white/10"></div>
+                    <span class="flex-shrink-0 mx-4 text-gray-500 text-[10px] uppercase tracking-widest font-bold">Or Choose Popular</span>
+                    <div class="flex-grow border-t border-white/10"></div>
+                </div>
+
+                <!-- 2. Popular Exams Grid -->
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-8">
+                    <template x-for="exam in exams" :key="exam">
+                        <button @click="selectExam(exam)" 
+                            :class="{'bg-accent-yellow text-black border-accent-yellow': form.exam === exam, 'bg-black border-white/20 hover:border-white/50 text-gray-300': form.exam !== exam}"
+                            class="p-3 rounded-lg border text-center font-bold text-xs transition-all">
+                            <span x-text="exam"></span>
+                        </button>
+                    </template>
+                </div>
+
+                <!-- 3. Custom Option -->
+                <div class="pt-6 border-t border-white/10">
+                    <button @click="selectExam('Custom')" 
+                        :class="{'bg-accent-yellow text-black border-accent-yellow': form.exam === 'Custom', 'bg-black border-white/20 hover:border-white/50 text-gray-300': form.exam !== 'Custom'}"
+                        class="w-full p-4 rounded-lg border text-center font-bold text-sm transition-all flex items-center justify-center gap-2 group">
+                        <span class="material-symbols-outlined group-hover:rotate-90 transition-transform">tune</span>
+                        Build Subject Wise Custom Test
+                    </button>
+                </div>
+
+                <div class="flex justify-end mt-8">
                     <button @click="nextStep()" 
                         :disabled="!form.exam || (form.exam === 'Other' && !examValidated)" 
                         class="bg-white text-black font-bold py-2.5 px-6 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-xs uppercase tracking-wider">
@@ -339,6 +345,17 @@
             },
             validationError: '',
 
+            init() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const examParam = urlParams.get('exam');
+                if (examParam) {
+                    // Check if it's a valid exam or 'Custom'/'Other'
+                    if (this.exams.includes(examParam) || examParam === 'Custom' || examParam === 'Other') {
+                        this.selectExam(examParam);
+                    }
+                }
+            },
+
             selectExam(exam) {
                 this.form.exam = exam;
                 if (exam === 'Custom') {
@@ -347,6 +364,7 @@
                 } else if (exam === 'Other') {
                     this.examValidated = false;
                 } else {
+                    this.customExam = ''; // Clear custom input if selecting a preset
                     this.examValidated = true;
                 }
             },
@@ -437,7 +455,9 @@
             nextStep() {
                 if (this.step === 1) {
                     if (!this.isLoggedIn) {
-                        window.location.href = "{{ route('login') }}?redirect={{ route('ai-test.create') }}";
+                        const currentParams = window.location.search;
+                        const redirectUrl = "{{ route('ai-test.create') }}" + currentParams;
+                        window.location.href = "{{ route('login') }}?redirect=" + encodeURIComponent(redirectUrl);
                         return;
                     }
                 }

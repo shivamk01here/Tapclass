@@ -205,4 +205,95 @@ class HomeController extends Controller
             'isLiked' => $isLiked,
         ]);
     }
+    public function careers()
+    {
+        $jobs = [
+            'marketing' => [
+                [
+                    'id' => 'marketing-manager',
+                    'title' => 'Marketing Manager',
+                    'type' => 'Full Time',
+                    'location' => 'Remote / Hybrid',
+                    'category' => 'Marketing',
+                    'description' => 'Take ownership of our growth engine. We\'re looking for a data-driven strategist to lead campaigns, optimize funnels, and drive market expansion. You\'ll have the autonomy to experiment and the resources to scale.',
+                    'requirements' => [
+                        '3+ years of experience in digital marketing',
+                        'Proven track record of managing ad budgets',
+                        'Strong analytical skills'
+                    ]
+                ]
+            ],
+            'content' => [
+                [
+                    'id' => 'content-writer-intern',
+                    'title' => 'Content Writer Intern',
+                    'type' => 'Internship',
+                    'location' => 'Remote / Hybrid',
+                    'category' => 'Content',
+                    'description' => 'Join our creative team and shape the voice of htc. This internship focuses on mentorship, learning, and unleashing your creativity. You\'ll work directly with leadership to craft compelling narratives for our diverse audience.',
+                    'requirements' => [
+                        'Strong writing and editing skills',
+                        'Passion for education and technology',
+                        'Ability to work independently'
+                    ]
+                ]
+            ]
+        ];
+        return view('pages.careers', compact('jobs'));
+    }
+
+    public function careerDetail($id)
+    {
+        $jobs = [
+            'marketing-manager' => [
+                'id' => 'marketing-manager',
+                'title' => 'Marketing Manager',
+                'type' => 'Full Time',
+                'location' => 'Remote / Hybrid',
+                'category' => 'Marketing',
+                'description' => 'Take ownership of our growth engine. We\'re looking for a data-driven strategist to lead campaigns, optimize funnels, and drive market expansion. You\'ll have the autonomy to experiment and the resources to scale.',
+                'requirements' => [
+                    '3+ years of experience in digital marketing',
+                    'Proven track record of managing ad budgets',
+                    'Strong analytical skills',
+                    'Experience with Google Analytics and SEO tools',
+                    'Excellent communication skills'
+                ],
+                'responsibilities' => [
+                    'Develop and execute marketing strategies',
+                    'Manage social media channels',
+                    'Analyze campaign performance',
+                    'Collaborate with the content team'
+                ]
+            ],
+            'content-writer-intern' => [
+                'id' => 'content-writer-intern',
+                'title' => 'Content Writer Intern',
+                'type' => 'Internship',
+                'location' => 'Remote / Hybrid',
+                'category' => 'Content',
+                'description' => 'Join our creative team and shape the voice of htc. This internship focuses on mentorship, learning, and unleashing your creativity. You\'ll work directly with leadership to craft compelling narratives for our diverse audience.',
+                'requirements' => [
+                    'Strong writing and editing skills',
+                    'Passion for education and technology',
+                    'Ability to work independently',
+                    'Currently enrolled in a related degree program',
+                    'Familiarity with SEO best practices'
+                ],
+                'responsibilities' => [
+                    'Write blog posts and articles',
+                    'Create social media content',
+                    'Assist with email marketing campaigns',
+                    'Research industry trends'
+                ]
+            ]
+        ];
+
+        if (!array_key_exists($id, $jobs)) {
+            abort(404);
+        }
+
+        $job = $jobs[$id];
+        return view('pages.career-detail', compact('job'));
+    }
 }

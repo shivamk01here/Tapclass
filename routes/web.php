@@ -34,6 +34,8 @@ Route::view('/about', 'pages.about')->name('about');
 Route::view('/contact', 'pages.contact')->name('contact');
 Route::view('/privacy', 'pages.privacy')->name('privacy');
 Route::view('/terms', 'pages.terms')->name('terms');
+Route::get('/careers', [HomeController::class, 'careers'])->name('careers');
+Route::get('/careers/{id}', [HomeController::class, 'careerDetail'])->name('careers.detail');
 
 Route::view('/register', 'auth.register')->name('register');
 

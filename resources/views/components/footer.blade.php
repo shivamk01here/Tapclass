@@ -26,6 +26,7 @@
                         <li><a href="{{ route('login') }}" class="text-xs hover:text-primary transition-colors">Login</a></li>
                         <li><a href="{{ route('register') }}" class="text-xs hover:text-primary transition-colors">Register</a></li>
                         <li><a href="{{ route('about') }}" class="text-xs hover:text-primary transition-colors">About Us</a></li>
+                        <li><a href="{{ route('careers') }}" class="text-xs hover:text-primary transition-colors">Careers</a></li>
                         <li><a href="{{ route('contact') }}" class="text-xs hover:text-primary transition-colors">Contact</a></li>
                         <li><a href="#" class="text-xs hover:text-primary transition-colors">Blog</a></li>
                     </ul>
