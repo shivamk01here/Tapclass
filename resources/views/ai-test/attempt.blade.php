@@ -3,7 +3,7 @@
 @section('title', 'Attempt Test - ' . $test->exam_context)
 
 @section('content')
-<div class="h-[calc(100vh-80px)] flex flex-col" x-data="examEngine()">
+<div class="min-h-[calc(100vh-80px)] max-h-[calc(100vh-80px)] flex flex-col" x-data="examEngine()">
     
     <!-- Mode Selection Modal -->
     <div x-show="!examStarted" class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm">
@@ -34,13 +34,13 @@
     </div>
 
     <!-- Exam Interface -->
-    <div x-show="examStarted" class="flex-grow flex flex-col max-w-6xl mx-auto w-full px-4 py-6" style="display: none;">
+    <div x-show="examStarted" class="flex-grow flex flex-col max-w-6xl mx-auto w-full px-4 py-4 overflow-hidden" style="display: none;">
         
         <!-- Header: Timer & Progress -->
-        <div class="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
+        <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-3 flex-shrink-0">
             <div>
-                <h1 class="font-heading text-xl uppercase text-white">{{ $test->exam_context }} Mock Test</h1>
-                <div class="flex items-center gap-2 text-xs text-gray-500 mt-1">
+                <h1 class="font-heading text-lg uppercase text-white">{{ $test->exam_context }} Mock Test</h1>
+                <div class="flex items-center gap-2 text-[10px] text-gray-500 mt-1">
                     <span class="px-2 py-0.5 rounded bg-white/10">{{ $test->subject }}</span>
                     <span>•</span>
                     <span>{{ $test->topic }}</span>
@@ -49,24 +49,24 @@
             
             <div class="flex items-center gap-6">
                 <!-- Timer -->
-                <div class="flex items-center gap-2 text-accent-yellow font-mono text-xl">
+                <div class="flex items-center gap-2 text-accent-yellow font-mono text-lg">
                     <span class="material-symbols-outlined">timer</span>
                     <span x-text="formatTime(timeLeft)"></span>
                 </div>
                 
-                <button @click="requestSubmit()" class="px-6 py-2 bg-white text-black font-bold uppercase text-sm tracking-widest hover:bg-gray-200 transition-colors rounded">
+                <button @click="requestSubmit()" class="px-4 py-1.5 bg-white text-black font-bold uppercase text-xs tracking-widest hover:bg-gray-200 transition-colors rounded">
                     Submit Test
                 </button>
             </div>
         </div>
 
         <!-- Main Content: Question & Palette -->
-        <div class="flex-grow flex gap-8 overflow-hidden">
+        <div class="flex-grow flex gap-6 overflow-hidden min-h-0">
             
             <!-- Question Area -->
-            <div class="flex-grow flex flex-col">
+            <div class="flex-grow flex flex-col min-h-0">
                 <!-- Question Card -->
-                <div class="bg-white/5 border border-white/10 rounded-xl p-8 flex-grow overflow-y-auto custom-scrollbar relative">
+                <div class="bg-white/5 border border-white/10 rounded-xl p-6 flex-grow overflow-y-auto custom-scrollbar relative min-h-0">
                     
                     <!-- Question Number -->
                     <div class="absolute top-0 left-0 bg-white/10 px-4 py-2 rounded-br-xl text-xs font-bold text-gray-300">
@@ -76,11 +76,11 @@
                     <div class="mt-8">
                         <template x-if="currentQuestion">
                             <div>
-                                <h2 class="text-xl md:text-2xl font-bold text-white mb-8 leading-relaxed" x-text="currentQuestion.question"></h2>
+                                <h2 class="text-lg md:text-xl font-bold text-white mb-6 leading-relaxed" x-text="currentQuestion.question"></h2>
 
                                 <div class="space-y-3">
                                     <template x-for="(option, index) in currentQuestion.options" :key="index">
-                                        <label class="flex items-center p-4 rounded-lg border cursor-pointer transition-all group"
+                                        <label class="flex items-center p-3 rounded-lg border cursor-pointer transition-all group"
                                             @click.prevent="selectAnswer(index)"
                                             :class="answers[currentQuestionIndex] === index ? 'border-accent-yellow bg-accent-yellow/10' : 'border-white/10 bg-black/20 hover:bg-white/5'">
                                             
@@ -92,7 +92,7 @@
                                                 <div class="w-2.5 h-2.5 rounded-full bg-current" x-show="answers[currentQuestionIndex] === index"></div>
                                             </div>
                                             
-                                            <span class="text-gray-300 group-hover:text-white" x-text="option"></span>
+                                            <span class="text-sm text-gray-300 group-hover:text-white" x-text="option"></span>
                                         </label>
                                     </template>
                                 </div>
@@ -110,14 +110,14 @@
                 </div>
 
                 <!-- Navigation -->
-                <div class="flex justify-between mt-6">
+                <div class="flex justify-between mt-4 flex-shrink-0">
                     <button @click="prevQuestion()" :disabled="currentQuestionIndex === 0" 
-                        class="px-6 py-3 rounded border border-white/10 text-white font-bold uppercase text-xs tracking-widest hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+                        class="px-4 py-2 rounded border border-white/10 text-white font-bold uppercase text-[10px] tracking-widest hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
                         <span class="material-symbols-outlined text-sm">arrow_back</span> Previous
                     </button>
 
                     <button @click="nextQuestion()" :disabled="currentQuestionIndex >= questions.length - 1 && currentQuestionIndex >= totalCount - 1"
-                        class="px-6 py-3 rounded bg-white text-black font-bold uppercase text-xs tracking-widest hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+                        class="px-4 py-2 rounded bg-white text-black font-bold uppercase text-[10px] tracking-widest hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
                         Next <span class="material-symbols-outlined text-sm">arrow_forward</span>
                     </button>
                 </div>
@@ -239,6 +239,11 @@
                             if (data.questions && data.questions.length > this.questions.length) {
                                 const newQuestions = data.questions.slice(this.questions.length);
                                 this.questions.push(...newQuestions);
+                            }
+                            
+                            // Update totalCount if available in response
+                            if (data.total_count !== undefined) {
+                                this.totalCount = data.total_count;
                             }
                             
                             if (data.status === 'completed' || data.status === 'failed') {

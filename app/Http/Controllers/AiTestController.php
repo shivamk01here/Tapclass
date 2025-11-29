@@ -171,6 +171,7 @@ class AiTestController extends Controller
         $data = json_decode($test->questions_json, true);
         return response()->json([
             'questions' => $data['questions'] ?? [],
+            'total_count' => $data['total_count'] ?? count($data['questions'] ?? []),
             'status' => $test->status
         ]);
     }
