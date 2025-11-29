@@ -9,6 +9,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\AiTestController;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,12 +47,19 @@ Route::get('/booking/create/{tutorId}', [BookingController::class, 'create'])->n
 Route::get('/ai-mock-tests', [App\Http\Controllers\AiTestController::class, 'landing'])->name('ai-test.landing');
 Route::get('/ai-mock-tests/create', [App\Http\Controllers\AiTestController::class, 'create'])->name('ai-test.create');
     Route::post('/ai-test/validate-exam', [App\Http\Controllers\AiTestController::class, 'validateExam'])->name('ai-test.validate-exam');
+    Route::get('/ai-test/{id}/status', [App\Http\Controllers\AiTestController::class, 'checkStatus'])->name('ai-test.status');
     Route::post('/ai-test/validate', [App\Http\Controllers\AiTestController::class, 'validateTopic'])->name('ai-test.validate');
 Route::post('/ai-mock-tests/generate', [App\Http\Controllers\AiTestController::class, 'generate'])->name('ai-test.generate')->middleware('auth');
 
 Route::post('/ai-mock-tests/generate', [App\Http\Controllers\AiTestController::class, 'generate'])->name('ai-test.generate')->middleware('auth');
 
-Route::get('/ai-mock-tests/view/{id}', [App\Http\Controllers\AiTestController::class, 'show'])->name('ai-test.show')->middleware('auth');
+    Route::get('/ai-test/pricing', [AiTestController::class, 'pricing'])->name('ai-test.pricing');
+    Route::post('/ai-test/purchase', [AiTestController::class, 'purchase'])->name('ai-test.purchase');
+    Route::get('/ai-test/create', [AiTestController::class, 'create'])->name('ai-test.create');
+Route::get('/ai-test/attempt/{uuid}', [AiTestController::class, 'attempt'])->name('ai-test.attempt');
+Route::get('/ai-test/{uuid}/questions', [AiTestController::class, 'getQuestions'])->name('ai-test.questions'); // New Route
+Route::post('/ai-test/submit/{uuid}', [AiTestController::class, 'submit'])->name('ai-test.submit')->middleware('auth');
+Route::get('/ai-mock-tests/view/{uuid}', [App\Http\Controllers\AiTestController::class, 'show'])->name('ai-test.show')->middleware('auth');
 
 // Authentication Routes
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login')->middleware('guest');

@@ -23,6 +23,8 @@ class User extends Authenticatable
         'otp',
         'otp_expires_at',
         'email_verified_at',
+        'ai_test_credits',
+        'is_premium',
     ];
 
     protected $hidden = [

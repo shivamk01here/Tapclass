@@ -245,7 +245,7 @@ return new class extends Migration
             $table->string('topic');
             $table->string('difficulty');
             $table->json('questions_json')->nullable();
-            $table->enum('status', ['pending', 'completed', 'failed'])->default('pending');
+            $table->enum('status', ['pending', 'processing', 'completed', 'failed'])->default('pending');
             $table->timestamps();
         });
         

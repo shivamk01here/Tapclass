@@ -13,7 +13,24 @@ class AiMockTest extends Model
 
     protected $casts = [
         'questions_json' => 'array',
+        'user_answers_json' => 'array',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->uuid)) {
+                $model->uuid = (string) \Illuminate\Support\Str::uuid();
+            }
+        });
+    }
+
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
 
     public function user()
     {
