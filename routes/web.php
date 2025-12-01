@@ -56,7 +56,7 @@ Route::post('/ai-mock-tests/generate', [App\Http\Controllers\AiTestController::c
 Route::post('/ai-mock-tests/generate', [App\Http\Controllers\AiTestController::class, 'generate'])->name('ai-test.generate')->middleware('auth');
 
     Route::get('/ai-test/pricing', [AiTestController::class, 'pricing'])->name('ai-test.pricing');
-    Route::post('/ai-test/purchase', [AiTestController::class, 'purchase'])->name('ai-test.purchase');
+    Route::post('/ai-test/purchase', [AiTestController::class, 'purchase'])->name('ai-test.purchase')->middleware('auth');
     Route::get('/ai-test/create', [AiTestController::class, 'create'])->name('ai-test.create');
 Route::get('/ai-test/attempt/{uuid}', [AiTestController::class, 'attempt'])->name('ai-test.attempt');
 Route::get('/ai-test/{uuid}/questions', [AiTestController::class, 'getQuestions'])->name('ai-test.questions'); // New Route

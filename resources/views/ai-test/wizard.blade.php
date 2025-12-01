@@ -186,16 +186,18 @@
                     Test Parameters
                 </h2>
 
-                <!-- Full Test Toggle (Premium Only) -->
-                <div class="mb-6 flex items-center justify-between bg-white/5 p-3 rounded-lg border border-white/10">
+                <!-- Full Test Toggle (Premium Only, Disabled for Custom) -->
+                <div class="mb-6 flex items-center justify-between bg-white/5 p-3 rounded-lg border border-white/10" :class="{'opacity-50 cursor-not-allowed': form.exam === 'Custom'}">
                     <div>
                         <span class="text-white text-sm font-bold block flex items-center gap-2">
                             Full Test Mode 
                             <span x-show="!isPremium" class="material-symbols-outlined text-xs text-gray-500">lock</span>
+                            <span x-show="form.exam === 'Custom'" class="text-xs text-gray-500">(Not available for Custom)</span>
                         </span>
                         <span class="text-gray-500 text-xs">Let AI decide question count (up to 100)</span>
                     </div>
                     <button @click="toggleFullTest()" 
+                        :disabled="form.exam === 'Custom'"
                         class="w-10 h-5 rounded-full relative transition-colors duration-300"
                         :class="isFullTest ? 'bg-accent-yellow' : 'bg-gray-700'">
                         <div class="w-3 h-3 bg-black rounded-full absolute top-1 transition-all duration-300"
@@ -361,6 +363,7 @@
                 if (exam === 'Custom') {
                     this.customExam = ''; // Reset custom input
                     this.examValidated = true; // Custom doesn't need validation
+                    this.isFullTest = false; // Disable Full Test for Custom
                 } else if (exam === 'Other') {
                     this.examValidated = false;
                 } else {
@@ -381,6 +384,9 @@
             },
 
             toggleFullTest() {
+                if (this.form.exam === 'Custom') {
+                    return; // Don't allow Full Test for Custom
+                }
                 if (!this.isPremium) {
                     window.location.href = "{{ route('ai-test.pricing') }}";
                     return;
