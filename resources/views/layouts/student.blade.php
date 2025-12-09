@@ -21,7 +21,8 @@
         ['icon' => 'calendar_month', 'label' => 'My Bookings', 'route' => route('student.bookings'), 'active' => request()->routeIs('student.bookings')],
         ['icon' => 'account_balance_wallet', 'label' => 'Wallet', 'route' => route('student.wallet'), 'active' => request()->routeIs('student.wallet')],
         ['icon' => 'favorite', 'label' => 'Wishlist', 'route' => route('student.wishlist'), 'active' => request()->routeIs('student.wishlist')],
-        ['icon' => 'notifications', 'label' => 'Notifications', 'route' => route('student.notifications'), 'active' => request()->routeIs('student.notifications')]
+        ['icon' => 'assignment', 'label' => 'Test Results', 'route' => route('student.test-results'), 'active' => request()->routeIs('student.test-results')],
+       ['icon' => 'notifications', 'label' => 'Notifications', 'route' => route('student.notifications'), 'active' => request()->routeIs('student.notifications')]
     ]
 ])
 

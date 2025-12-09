@@ -53,10 +53,12 @@ Route::get('/ai-mock-tests/create', [App\Http\Controllers\AiTestController::clas
     Route::post('/ai-test/validate', [App\Http\Controllers\AiTestController::class, 'validateTopic'])->name('ai-test.validate');
 Route::post('/ai-mock-tests/generate', [App\Http\Controllers\AiTestController::class, 'generate'])->name('ai-test.generate')->middleware('auth');
 
-Route::post('/ai-mock-tests/generate', [App\Http\Controllers\AiTestController::class, 'generate'])->name('ai-test.generate')->middleware('auth');
-
     Route::get('/ai-test/pricing', [AiTestController::class, 'pricing'])->name('ai-test.pricing');
-    Route::post('/ai-test/purchase', [AiTestController::class, 'purchase'])->name('ai-test.purchase')->middleware('auth');
+    Route::post('/ai-test/purchase', [AiTestController::class, 'purchase'])->name('ai-test.purchase')->middleware('auth'); // Redirects to payment
+    Route::get('/ai-test/payment', [AiTestController::class, 'paymentPage'])->name('ai-test.payment.show')->middleware('auth');
+    Route::post('/ai-test/payment/submit', [AiTestController::class, 'submitPayment'])->name('ai-test.payment.submit')->middleware('auth');
+
+    Route::post('/ai-mock-tests/generate', [App\Http\Controllers\AiTestController::class, 'generate'])->name('ai-test.generate');
     Route::get('/ai-test/create', [AiTestController::class, 'create'])->name('ai-test.create');
 Route::get('/ai-test/attempt/{uuid}', [AiTestController::class, 'attempt'])->name('ai-test.attempt');
 Route::get('/ai-test/{uuid}/questions', [AiTestController::class, 'getQuestions'])->name('ai-test.questions'); // New Route
@@ -142,6 +144,9 @@ Route::middleware(['auth', 'role:student','student.onboarded'])->prefix('student
     Route::get('/review/create/{booking}', [ReviewController::class, 'create'])->name('review.create');
     Route::post('/review/store/{booking}', [ReviewController::class, 'store'])->name('review.store');
     Route::post('/review/tutor/{tutorId}', [ReviewController::class, 'storeFromProfile'])->name('review.store');
+
+    // Test Results
+    Route::get('/test-results', [StudentController::class, 'testResults'])->name('test-results');
 });
 
     Route::post('/review/store/{booking}', [ReviewController::class, 'store'])->name('reviews.store');
@@ -307,4 +312,38 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/messages/chat/{user}', [MessageController::class, 'chat'])->name('messages.chat');
     Route::post('/messages/send/{user}', [MessageController::class, 'send'])->name('messages.send');
     Route::get('/messages/fetch/{user}', [MessageController::class, 'fetch'])->name('messages.fetch');
+});
+
+// Temporary Route for Email Preview
+Route::get('/test-email-view', function() {
+    $user = \App\Models\User::first();
+    $test = \App\Models\AiMockTest::where('status', 'completed')->first();
+    
+    if (!$test) {
+        return "No completed test found.";
+    }
+    
+    // Determine Grade and Message (Mock logic similar to controller)
+    $total = 20; // Mock total
+    $score = $test->score;
+    $percentage = $total > 0 ? round(($score / $total) * 100) : 0;
+    
+    $grade = 'F'; $gradeMessage = 'Needs Improvement';
+    if ($percentage >= 90) { $grade = 'A+'; $gradeMessage = 'Outstanding!'; }
+    elseif ($percentage >= 70) { $grade = 'B'; $gradeMessage = 'Good Job!'; }
+    elseif ($percentage >= 50) { $grade = 'D'; $gradeMessage = 'Keep Practicing'; }
+
+    $stats = [
+        'percentage' => $percentage,
+        'grade' => $grade,
+        'gradeMessage' => $gradeMessage,
+        'correct' => $score,
+        'wrong' => $total - $score, // Simplify for preview
+        'skipped' => 0,
+        'total' => $total,
+        'questions' => [], // Empty as we aren't showing questions
+        'userAnswers' => [] 
+    ];
+
+    return view('emails.mocktest-result', compact('user', 'test', 'stats'));
 });

@@ -40,8 +40,7 @@ class StudentController extends Controller
                 ->orderBy('average_rating', 'desc')
                 ->limit(6)
                 ->get();
-        } else {
-            // If no preferences set, show top-rated tutors
+        // If no preferences set, show top-rated tutors
             $recommendedTutors = TutorProfile::with(['user', 'subjects'])
                 ->where('verification_status', 'verified')
                 ->orderBy('average_rating', 'desc')
@@ -49,7 +48,25 @@ class StudentController extends Controller
                 ->get();
         }
         
-        return view('student.dashboard', compact('upcomingSessions', 'recommendedTutors'));
+        // Get recent mock tests
+        $recentMockTests = \App\Models\AiMockTest::where('user_id', $student->id)
+            ->where('status', 'completed')
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
+        return view('student.dashboard', compact('upcomingSessions', 'recommendedTutors', 'recentMockTests'));
+    }
+
+    public function testResults()
+    {
+        $student = auth()->user();
+        
+        $mockTests = \App\Models\AiMockTest::where('user_id', $student->id)
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+            
+        return view('student.test-results', compact('mockTests'));
     }
 
     public function findTutor(Request $request)

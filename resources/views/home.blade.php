@@ -8,7 +8,7 @@
             
             <div class="text-center max-w-4xl mx-auto py-24">
                 
-            <h1 class="font-heading text-[3rem] md:text-[3.8rem] lg:text-[4.2rem] uppercase leading-[0.9] tracking-wide text-black text-center">
+            <h1 class="font-heading text-[3rem] md:text-[3.8rem] lg:text-[4.2rem] uppercase leading-[0.9] tracking-wide text-[#2d4354] text-center">
             Find Your Perfect Tutor, ANYTIME EASILY
             </h1>
 
@@ -60,16 +60,6 @@
             <div class="absolute bottom-32 right-8 w-36 h-36 z-0 pointer-events-none hidden lg:block transform -rotate-6 opacity-70 hover:opacity-100 transition-all duration-300">
                 <img src="https://api.iconify.design/solar/cup-star-bold-duotone.svg?color=%233f8bfc&width=144&height=144" alt="Achievement" class="w-full h-full drop-shadow-lg">
             </div>
-
-
-
-
-
-
-
-
-
-
         </div>
     </main>
 

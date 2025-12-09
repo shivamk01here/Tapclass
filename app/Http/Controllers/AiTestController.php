@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
+use App\Services\TelegramService;
+use App\Mail\MocktestResultEmail;
 
 class AiTestController extends Controller
 {
@@ -196,8 +200,65 @@ class AiTestController extends Controller
         $test->update([
             'user_answers_json' => $userAnswers,
             'score' => $score,
-            // 'status' => 'completed' // Already completed, but maybe add 'submitted' state if needed
+            'status' => 'completed'
         ]);
+
+        // Calculate Stats for Notifications
+        $percentage = $total > 0 ? round(($score / $total) * 100) : 0;
+        $correct = $score;
+        $wrong = 0;
+        $skipped = 0;
+
+        foreach ($questions as $idx => $q) {
+            $userAns = $userAnswers[$idx] ?? null;
+            if ($userAns === null) {
+                $skipped++;
+            } elseif ($userAns != $q['correct_index']) {
+                $wrong++;
+            }
+        }
+
+        // Determine Grade
+        $grade = 'F';
+        $gradeMessage = 'Needs Improvement';
+        if ($percentage >= 90) { $grade = 'A+'; $gradeMessage = 'Outstanding!'; }
+        elseif ($percentage >= 80) { $grade = 'A'; $gradeMessage = 'Excellent!'; }
+        elseif ($percentage >= 70) { $grade = 'B'; $gradeMessage = 'Good Job!'; }
+        elseif ($percentage >= 60) { $grade = 'C'; $gradeMessage = 'Fair Performance'; }
+        elseif ($percentage >= 50) { $grade = 'D'; $gradeMessage = 'Keep Practicing'; }
+
+        $stats = [
+            'total' => $total,
+            'correct' => $correct,
+            'wrong' => $wrong,
+            'skipped' => $skipped,
+            'score' => $score,
+            'percentage' => $percentage,
+            'grade' => $grade,
+            'gradeMessage' => $gradeMessage,
+            'questions' => $questions,
+            'userAnswers' => $userAnswers
+        ];
+
+        $user = auth()->user();
+
+        // Send Email with Results
+        try {
+            if ($user && $user->email) {
+                Mail::mailer('smtp')->to($user->email)->send(new MocktestResultEmail($test, $user, $stats));
+                Log::info('Mocktest result email sent', ['test_id' => $test->id]);
+            }
+        } catch (\Throwable $e) {
+            Log::error('Failed to send mocktest result email', ['error' => $e->getMessage()]);
+        }
+
+        // Send Telegram Notification
+        try {
+            $telegramService = new TelegramService();
+            $telegramService->sendMocktestNotification($user, $stats, $test);
+        } catch (\Throwable $e) {
+            Log::error('Failed to send mocktest telegram notification', ['error' => $e->getMessage()]);
+        }
         
         return redirect()->route('ai-test.show', $test->uuid);
     }
@@ -219,16 +280,60 @@ class AiTestController extends Controller
             'plan' => 'required|string|in:standard,pro'
         ]);
 
-        $user = auth()->user();
-        
-        if ($request->plan === 'standard') {
-            $user->increment('ai_test_credits', 10);
-            $user->update(['is_premium' => true]);
-        } elseif ($request->plan === 'pro') {
-            $user->increment('ai_test_credits', 100);
-            $user->update(['is_premium' => true]);
+        return redirect()->route('ai-test.payment.show', ['plan' => $request->plan]);
+    }
+
+    public function paymentPage(Request $request)
+    {
+        $plan = $request->input('plan');
+        if (!in_array($plan, ['standard', 'pro'])) {
+            return redirect()->route('ai-test.pricing');
         }
 
-        return response()->json(['success' => true]);
+        $amount = $plan === 'standard' ? 99 : 499; // Define prices
+        return view('ai-test.payment', compact('plan', 'amount'));
+    }
+
+    public function submitPayment(Request $request)
+    {
+        $request->validate([
+            'plan' => 'required|string',
+            'utr' => 'required|string',
+            'screenshot' => 'required|image|max:2048' // 2MB max
+        ]);
+
+        $user = auth()->user();
+        $plan = $request->plan;
+        $amount = $plan === 'standard' ? 99 : 499;
+
+        // Save Screenshot
+        $path = $request->file('screenshot')->store('payment_proofs', 'public');
+
+        // Create Payment Request
+        $payment = \App\Models\AiPaymentRequest::create([
+            'user_id' => $user->id,
+            'plan' => $plan,
+            'amount' => $amount,
+            'utr' => $request->utr,
+            'screenshot_path' => $path,
+            'status' => 'pending'
+        ]);
+
+        // Send Email
+        try {
+            Mail::to($user->email)->send(new \App\Mail\PaymentSubmittedEmail($payment));
+        } catch (\Exception $e) {
+            Log::error('Payment submitted email failed', ['error' => $e->getMessage()]);
+        }
+
+        // Send Telegram Notification
+        try {
+            $telegramService = new TelegramService();
+            $telegramService->sendPaymentNotification($payment);
+        } catch (\Exception $e) {
+            Log::error('Telegram payment notification failed', ['error' => $e->getMessage()]);
+        }
+
+        return redirect()->route('ai-test.pricing')->with('success', 'Payment submitted! We will verify and add credits shortly.');
     }
 }

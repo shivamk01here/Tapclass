@@ -31,6 +31,12 @@
 <h3 class="text-base sm:text-lg font-bold mb-1">Wallet</h3>
 <p class="text-xs sm:text-sm text-gray-600">Manage your balance</p>
 </a>
+
+<a href="{{ route('student.test-results') }}" class="block p-4 sm:p-6 bg-white rounded-xl border border-gray-200 hover:shadow-lg transition-shadow">
+<span class="material-symbols-outlined text-3xl sm:text-4xl text-primary mb-2">assignment</span>
+<h3 class="text-base sm:text-lg font-bold mb-1">Test Results</h3>
+<p class="text-xs sm:text-sm text-gray-600">View your analysis</p>
+</a>
 </div>
 
 <!-- Upcoming Sessions -->
@@ -64,6 +70,58 @@ class="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover flex-shrink-0">
 <div class="bg-white rounded-xl border border-gray-200 p-6 sm:p-8 text-center">
 <span class="material-symbols-outlined text-5xl sm:text-6xl text-gray-300 mb-3">event_busy</span>
 <p class="text-sm sm:text-base text-gray-600">No upcoming sessions. <a href="{{ route('tutors.search') }}" class="text-primary hover:underline">Find a tutor</a> to book your first session!</p>
+</div>
+@endif
+</div>
+
+<!-- Recent AI Mock Results -->
+<div class="mt-6 sm:mt-8">
+<div class="flex items-center justify-between mb-4">
+    <h2 class="text-xl sm:text-2xl font-bold">Recent Mock Tests</h2>
+    <a href="{{ route('student.test-results') }}" class="text-primary hover:underline text-xs sm:text-sm font-medium">View All</a>
+</div>
+@if(isset($recentMockTests) && $recentMockTests->count() > 0)
+<div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <div class="divide-y divide-gray-200">
+        @foreach($recentMockTests as $test)
+        <div class="p-4 sm:p-6 hover:bg-gray-50 transition">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+                <div class="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
+                        <span class="material-symbols-outlined text-primary">psychology</span>
+                    </div>
+                    <div class="min-w-0">
+                        <h3 class="font-bold text-gray-900 text-sm sm:text-base truncate">{{ $test->exam_context }}</h3>
+                        <p class="text-xs sm:text-sm text-gray-600 truncate">{{ $test->subject }} - {{ $test->topic }}</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+                    <div class="text-right">
+                        @if($test->status === 'completed')
+                            <p class="text-sm font-bold {{ $test->score >= ($test->total_questions ?? 0) * 0.7 ? 'text-green-600' : 'text-orange-600' }}">
+                                Score: {{ $test->score }}
+                            </p>
+                        @else
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                {{ ucfirst($test->status) }}
+                            </span>
+                        @endif
+                        <p class="text-xs text-gray-500">{{ $test->created_at->format('M d, Y') }}</p>
+                    </div>
+                    <a href="{{ route('ai-test.show', $test->uuid) }}" class="p-2 text-gray-400 hover:text-primary transition">
+                        <span class="material-symbols-outlined">arrow_forward</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        @endforeach
+    </div>
+</div>
+@else
+<div class="bg-white rounded-xl border border-gray-200 p-6 sm:p-8 text-center">
+    <span class="material-symbols-outlined text-5xl sm:text-6xl text-gray-300 mb-3">quiz</span>
+    <p class="text-sm sm:text-base text-gray-600">No mock tests attempted yet.</p>
+    <a href="{{ route('ai-test.landing') }}" class="text-primary hover:underline font-medium">Take a mock test</a>
 </div>
 @endif
 </div>

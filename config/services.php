@@ -42,4 +42,10 @@ return [
         'verify' => env('APP_ENV') === 'production' ? true : false,
     ],
 
+    'telegram' => [
+        'bot_token' => env('TELEGRAM_BOT_TOKEN'),
+        'group_id' => env('TELEGRAM_GROUP_ID'),
+        'mocktest_group_id' => env('TELEGRAM_MOCKTEST_GROUP_ID'),
+    ],
+
 ];

@@ -3,7 +3,7 @@
 @section('title', 'Upgrade Plan - HTC X')
 
 @section('content')
-<div class="py-12" x-data="pricingPage()">
+<div class="py-12">
     <div class="max-w-6xl mx-auto px-4">
         
         <div class="text-center mb-16">
@@ -79,10 +79,13 @@
                     </li>
                 </ul>
 
-                <button @click="purchase('standard')" :disabled="processing" class="w-full py-3 rounded-lg bg-accent-yellow text-black font-bold hover:bg-white hover:scale-105 transition-all shadow-lg uppercase text-xs tracking-wider flex justify-center items-center gap-2">
-                    <span x-show="processing && selectedPlan === 'standard'" class="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></span>
-                    Buy Now
-                </button>
+                <form action="{{ route('ai-test.purchase') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="plan" value="standard">
+                    <button type="submit" class="w-full py-3 rounded-lg bg-accent-yellow text-black font-bold hover:bg-white hover:scale-105 transition-all shadow-lg uppercase text-xs tracking-wider flex justify-center items-center gap-2">
+                        Buy Now
+                    </button>
+                </form>
             </div>
 
             <!-- Pro Plan -->
@@ -115,111 +118,17 @@
                     </li>
                 </ul>
 
-                <button @click="purchase('pro')" :disabled="processing" class="w-full py-3 rounded-lg border border-white/20 text-white font-bold hover:bg-white hover:text-black transition-all uppercase text-xs tracking-wider flex justify-center items-center gap-2">
-                    <span x-show="processing && selectedPlan === 'pro'" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                    Buy Now
-                </button>
+                <form action="{{ route('ai-test.purchase') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="plan" value="pro">
+                    <button type="submit" class="w-full py-3 rounded-lg border border-white/20 text-white font-bold hover:bg-white hover:text-black transition-all uppercase text-xs tracking-wider flex justify-center items-center gap-2">
+                        Buy Now
+                    </button>
+                </form>
             </div>
 
-        </div>
-
-        <!-- Mock Payment Modal -->
-        <div x-show="showPaymentModal" style="display: none;" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4" x-transition>
-            <div class="bg-white rounded-xl p-6 max-w-sm w-full shadow-2xl text-black">
-                <div class="flex justify-between items-center mb-6 border-b pb-4">
-                    <h3 class="text-lg font-bold">Secure Payment</h3>
-                    <span class="material-symbols-outlined text-green-600">lock</span>
-                </div>
-                
-                <div class="space-y-4 mb-6">
-                    <div class="flex justify-between text-sm">
-                        <span class="text-gray-600">Plan:</span>
-                        <span class="font-bold" x-text="planName"></span>
-                    </div>
-                    <div class="flex justify-between text-sm">
-                        <span class="text-gray-600">Amount:</span>
-                        <span class="font-bold text-xl" x-text="planPrice"></span>
-                    </div>
-                </div>
-
-                <div class="bg-gray-100 p-4 rounded-lg mb-6 flex items-center gap-3">
-                    <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xs">P</div>
-                    <div>
-                        <div class="text-xs font-bold">Mock Payment Gateway</div>
-                        <div class="text-[10px] text-gray-500">Test Mode Enabled</div>
-                    </div>
-                </div>
-
-                <button @click="confirmPayment()" class="w-full bg-black text-white py-3 rounded-lg font-bold hover:bg-gray-800 transition-colors flex justify-center items-center gap-2">
-                    <span x-show="paying" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                    <span x-text="paying ? 'Processing...' : 'Pay Now'"></span>
-                </button>
-            </div>
         </div>
 
     </div>
 </div>
-
-<script>
-    function pricingPage() {
-        return {
-            processing: false,
-            selectedPlan: '',
-            showPaymentModal: false,
-            planName: '',
-            planPrice: '',
-            paying: false,
-
-            purchase(plan) {
-                this.selectedPlan = plan;
-                this.processing = true;
-                
-                // Simulate network delay
-                setTimeout(() => {
-                    if (plan === 'standard') {
-                        this.planName = 'Exam Ready (10 Tests)';
-                        this.planPrice = '₹200';
-                    } else if (plan === 'pro') {
-                        this.planName = 'Ranker (100 Tests)';
-                        this.planPrice = '₹1000';
-                    }
-                    this.showPaymentModal = true;
-                    this.processing = false;
-                }, 500);
-            },
-
-            async confirmPayment() {
-                this.paying = true;
-                
-                try {
-                    const response = await fetch("{{ route('ai-test.purchase') }}", {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json',
-                            'X-CSRF-TOKEN': "{{ csrf_token() }}"
-                        },
-                        body: JSON.stringify({ plan: this.selectedPlan })
-                    });
-                    
-                    const data = await response.json();
-                    
-                    if (data.success) {
-                        // Show success animation or toast if needed
-                        alert('Payment Successful! Credits added.');
-                        window.location.href = "{{ route('ai-test.create') }}";
-                    } else {
-                        alert('Payment failed. Please try again.');
-                    }
-                } catch (error) {
-                    console.error('Payment error:', error);
-                    alert('An error occurred.');
-                } finally {
-                    this.paying = false;
-                    this.showPaymentModal = false;
-                }
-            }
-        }
-    }
-</script>
 @endsection

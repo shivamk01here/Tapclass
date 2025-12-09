@@ -6,6 +6,8 @@ use App\Models\User;
 use App\Models\StudentProfile;
 use App\Models\TutorProfile;
 use App\Models\Wallet;
+use App\Mail\WelcomeEmail;
+use App\Services\TelegramService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -122,6 +124,9 @@ class AuthController extends Controller
                 ]);
 
                 DB::commit();
+
+                // Send welcome email and Telegram notification
+                $this->sendWelcomeNotifications($user);
                 session()->forget(['google_user_data', 'oauth_role']);
                 Auth::login($user);
                 return redirect()->route('student.dashboard')->with('success', 'Registration successful! Welcome to Htc.');
@@ -218,6 +223,9 @@ class AuthController extends Controller
                     'onboarding_step' => 0,
                 ]);
                 DB::commit();
+
+                // Send welcome email and Telegram notification
+                $this->sendWelcomeNotifications($user);
                 session()->forget(['google_user_data', 'oauth_role']);
                 Auth::login($user);
                 return redirect()->route('tutor.dashboard')->with('success', 'Registration successful!');
@@ -300,6 +308,9 @@ class AuthController extends Controller
                 'onboarding_step' => 0,
             ]);
             DB::commit();
+
+            // Send welcome email and Telegram notification
+            $this->sendWelcomeNotifications($user);
             session()->forget(['pending_tutor_registration']);
             Auth::login($user);
             return view('auth.tutor-verify-otp', ['pending' => null, 'justVerified' => true]);
@@ -361,6 +372,9 @@ class AuthController extends Controller
                     'total_debited' => 0,
                 ]);
                 \DB::commit();
+
+                // Send welcome email and Telegram notification
+                $this->sendWelcomeNotifications($user);
                 session()->forget(['google_user_data','oauth_role']);
                 \Auth::login($user);
                 return redirect()->route('onboarding.parent.show')->with('success','Welcome! Add your first learner.');
@@ -443,6 +457,9 @@ class AuthController extends Controller
                 'total_debited' => 0,
             ]);
             \DB::commit();
+
+            // Send welcome email and Telegram notification
+            $this->sendWelcomeNotifications($user);
             session()->forget(['pending_parent_registration']);
             \Auth::login($user);
             return view('auth.parent-verify-otp', ['pending' => null, 'justVerified' => true]);
@@ -680,6 +697,9 @@ class AuthController extends Controller
             ]);
 
             DB::commit();
+
+            // Send welcome email and Telegram notification
+            $this->sendWelcomeNotifications($user);
             session()->forget(['pending_student_registration']);
             Auth::login($user);
 
@@ -709,5 +729,36 @@ class AuthController extends Controller
             // swallow errors; we don't block user here
         }
         return back()->with('issue_submitted', true);
+    }
+
+    /**
+     * Send welcome email and Telegram notification for a newly registered user
+     *
+     * @param User $user The newly registered user
+     * @return void
+     */
+    protected function sendWelcomeNotifications(User $user): void
+    {
+        // Send welcome email
+        try {
+            Mail::mailer('smtp')->to($user->email)->send(new WelcomeEmail($user));
+            Log::info('Welcome email sent', ['user_id' => $user->id, 'email' => $user->email]);
+        } catch (\Throwable $e) {
+            Log::error('Failed to send welcome email', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
+
+        // Send Telegram notification
+        try {
+            $telegramService = new TelegramService();
+            $telegramService->sendRegistrationNotification($user);
+        } catch (\Throwable $e) {
+            Log::error('Failed to send Telegram notification', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 }
